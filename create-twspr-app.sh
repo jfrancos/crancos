@@ -1,8 +1,17 @@
 #!/bin/bash
 # create-tailwind-snowpack-react-app
 
+TEMPLATE=app-template-react
+APP=App.jsx
+
+if [ "$1" == "--ts" ]; then
+  shift
+  TEMPLATE=app-template-react-typescript
+  APP=App.tsx
+fi
+
 # Create snowpack app with react template
-npx create-snowpack-app $1 --template @snowpack/app-template-react
+npx create-snowpack-app $1 --template @snowpack/"$TEMPLATE"
 cd $1
 
 # Install modules necessary for tailwind (tailwind runs via postcss)
@@ -52,12 +61,12 @@ function App() {
 }
 
 export default App;
-" >src/App.jsx
+" >src/"$APP"
 
 git add -A
 git commit -m "setup tailwind"
 
 # Open project with vscode, if it's installed
 if command -v code &>/dev/null; then
-  code . -g src/App.jsx:6:7
+  code . -g src/"$APP":6:7
 fi
