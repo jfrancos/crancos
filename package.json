@@ -1,0 +1,20 @@
+{
+    "name": "create-twspr-app",
+    "version": "1.0.1",
+    "license": "MIT",
+    "homepage": "https://github.com/jfrancos/create-twspr-app",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/jfrancos/create-twspr-app.git"
+    },
+    "bin": {
+      "create-twspr-app": "./create-twspr-app.sh"
+    },
+    "keywords": [
+        "create",
+        "tailwind",
+        "snowpack",
+        "react",
+        "app"
+      ]
+  }
