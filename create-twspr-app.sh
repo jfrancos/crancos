@@ -57,5 +57,7 @@ export default App;
 git add -A
 git commit -m "setup tailwind"
 
-# Open project with vscode
-code .
+# Open project with vscode, if it's installed
+if command -v code &>/dev/null; then
+  code .
+fi
