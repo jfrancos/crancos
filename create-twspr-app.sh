@@ -46,7 +46,7 @@ echo "import React, { useState, useEffect } from 'react';
 function App() {
   return (
     <div className=\"h-full flex flex-col justify-center items-center\">
-      TWSPRA
+      Hello, TWSPRA!
     </div>
   );
 }
@@ -59,5 +59,5 @@ git commit -m "setup tailwind"
 
 # Open project with vscode, if it's installed
 if command -v code &>/dev/null; then
-  code .
+  code . -g src/App.jsx:6:7
 fi
