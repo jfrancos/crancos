@@ -54,5 +54,8 @@ function App() {
 export default App;
 " >src/App.jsx
 
+git add -A
+git commit -m "setup tailwind"
+
 # Open project with vscode
 code .
