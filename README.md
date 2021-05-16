@@ -1,8 +1,27 @@
-# create-twspr-app
-create-tailwind-snowpack-react-app
-
-Creates a [snowpack](https://www.snowpack.dev) app using `create-snowpack-app` with snowpack's [react](https://github.com/snowpackjs/snowpack/tree/main/create-snowpack-app/app-template-react) (or [react-typescript](https://github.com/snowpackjs/snowpack/tree/main/create-snowpack-app/app-template-react-typescript), via the `--ts` option) template.  Removes sample code, adds [tailwind](https://tailwindcss.com), does some generic css formatting, and opens your new project in vscode.
+# CRA a la Francos
 
 Usage:
 
-`npx create-twspr-app [--ts] [project-name]`
+`npx crancos [--ts] [project-name]`
+
+Bootstraps an environment analogous to create-react-app.
+
+**Please NB the CSS file sets up all divs with `position: flex;`**
+
+The above command will run a script that:
+
+1. Runs `create-snowpack-app` (this is more specifically analogous to `create-react-app`)
+   
+2. Installs `npm` packages and sets up config files necessary for Tailwind (including [Xeevis' patch](https://github.com/jadex/snowpack-plugin-tailwindcss-jit) for getting jit working with snowpack)
+
+3. Installs react-icons
+
+4. Adds some CSS that
+   1. sets all divs to use `position: flex` by default
+
+   2. creates a `grid-overlay` class for `div` superimposition  sans `relative`/`absolute`
+
+5. Replaces the default CRA page with a more minimal one (which demonstrates `grid-overlay`)
+
+6. Opens up your main App file in vscode (if it's installed)
+
