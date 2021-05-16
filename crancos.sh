@@ -15,10 +15,12 @@ npx create-snowpack-app $1 --template @snowpack/"$TEMPLATE"
 cd $1
 
 # Install modules necessary for tailwind (tailwind runs via postcss)
-npm install -D tailwindcss @snowpack/plugin-postcss
+npm install -D tailwindcss @snowpack/plugin-postcss @jadex/snowpack-plugin-tailwindcss-jit
+npm install react-icons
 
 # Adjust snowpack.config.js for tailwind
-echo "module.exports.plugins = module.exports.plugins.concat(['@snowpack/plugin-postcss'])" >>snowpack.config.js
+echo "module.exports.plugins = module.exports.plugins.concat(['@snowpack/plugin-postcss', '@jadex/snowpack-plugin-tailwindcss-jit'])
+module.exports.devOptions.port = 3000" >>snowpack.config.js
 
 # Add minimal postcss and tailwind config files
 echo "module.exports = {
@@ -28,10 +30,11 @@ echo "module.exports = {
   };" >postcss.config.js
 
 echo "module.exports = {
+    mode: 'jit',
     purge: ['./public/**/*.html', './src/**/*.{js,jsx,ts,tsx,vue}'],
   };" >tailwind.config.js
 
-# Setup almost-minimal css file to incorporate tailwind
+# Setup css file to incorporate tailwind + set default div display
 echo "@tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,16 +49,23 @@ body,
   grid-row-start: 1;
   grid-column-start: 1;
 }
+
+div {
+  display: flex;
+}
 " >src/index.css
 
 # Replace sample code with a minimal, full-screen app
 rm src/App.css src/logo.svg
 echo "import React, { useState, useEffect } from 'react';
+import { HiGlobe } from 'react-icons/hi';
+
+// https://react-icons.github.io/react-icons/icons?name=hi
 
 function App() {
   return (
-    <div className=\"h-full flex flex-col justify-center items-center\">
-      Hello, TWSPRA!
+    <div className=\"h-full w-full justify-center items-center\">
+      Hello, Crancos!
     </div>
   );
 }
@@ -63,6 +73,7 @@ function App() {
 export default App;
 " >src/"$APP"
 
+# update git repo
 git add -A
 git commit -m "setup tailwind"
 
