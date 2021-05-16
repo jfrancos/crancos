@@ -57,15 +57,18 @@ div {
 
 # Replace sample code with a minimal, full-screen app
 rm src/App.css src/logo.svg
-echo "import React, { useState, useEffect } from 'react';
-import { HiGlobe } from 'react-icons/hi';
+echo "import React, { useState, useEffect, useRef } from 'react';
+import { FaReact } from 'react-icons/fa';
 
-// https://react-icons.github.io/react-icons/icons?name=hi
+// https://react-icons.github.io/react-icons/icons
 
 function App() {
   return (
     <div className=\"h-full w-full justify-center items-center\">
-      Hello, Crancos!
+      <div className=\"grid\">
+        <FaReact className=\"grid-overlay h-96 w-96 text-purple-100\" />
+        <div className=\"grid-overlay justify-center items-center\">Hello, Crancos!</div>
+      </div>
     </div>
   );
 }
