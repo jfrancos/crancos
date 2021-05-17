@@ -4,7 +4,7 @@ Usage:
 
 `npx crancos [--ts] [project-name]`
 
-Bootstraps an environment analogous to create-react-app.
+Bootstraps an environment analogous to create-react-app, but with [Snowpack](https://www.snowpack.dev/) and [Tailwind](https://tailwindcss.com)
 
 **Please NB the CSS file sets up all divs with `display: flex;`**
 
