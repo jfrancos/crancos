@@ -6,7 +6,7 @@ Usage:
 
 Bootstraps an environment analogous to create-react-app.
 
-**Please NB the CSS file sets up all divs with `position: flex;`**
+**Please NB the CSS file sets up all divs with `display: flex;`**
 
 The above command will run a script that:
 
@@ -17,7 +17,7 @@ The above command will run a script that:
 3. Installs react-icons
 
 4. Adds some CSS that
-   1. sets all divs to use `position: flex` by default
+   1. sets all divs to use `display: flex` by default
 
    2. creates a `grid-overlay` class for `div` superimposition  sans `relative`/`absolute`
 
