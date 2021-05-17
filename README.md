@@ -25,3 +25,4 @@ The above command will run a script that:
 
 6. Opens up your main App file in vscode (if it's installed)
 
+7. Takes under 30 seconds on my 2017 Core i7

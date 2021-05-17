@@ -52,6 +52,7 @@ body,
 
 div {
   display: flex;
+
 }
 " >src/index.css
 
@@ -82,5 +83,5 @@ git commit -m "setup tailwind"
 
 # Open project with vscode, if it's installed
 if command -v code &>/dev/null; then
-  code . -g src/"$APP":6:7
+  code . -g src/"$APP":9:7
 fi
