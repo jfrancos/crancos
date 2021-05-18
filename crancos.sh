@@ -77,9 +77,73 @@ function App() {
 export default App;
 " >src/"$APP"
 
+mkdir .vscode
+echo '{
+  "Add handler with event param": {
+    "prefix": "h",
+    "scope": "javascriptreact",
+    "body": [
+      "const handle$1 = (${2:{ target: { value \\} \\}}) => {",
+      "  $0",
+      "}"
+    ],
+    "description": "Add handler with event param"
+  },
+  "Add mapped handler with event param": {
+    "prefix": "hi",
+    "scope": "javascriptreact",
+    "body": [
+      "const handle$1 = (index) => (${2:{ target: { value \\} \\}}) => {",
+      "  $0",
+      "}"
+    ],
+    "description": "Add mapped handler with event param"
+  },
+  "Add a div w/ className": {
+    "prefix": "d",
+    "scope": "javascriptreact",
+    "body": ["<div className=\"$1\">", "  $2", "</div>"],
+    "description": "Add a div w/ className"
+  },
+  "Use state": {
+    "prefix": "s",
+    "scope": "javascriptreact",
+    "body": [
+      "const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = useState(${2:null})"
+    ],
+    "description": "Use state"
+  },
+  "Update at index": {
+    "prefix": "ui",
+    "scope": "javascriptreact",
+    "body": [
+      "set${1/(.*)/${1:/capitalize}/}($1 => [",
+      "  ...$1.slice(0, index),",
+      "  { ...$1[index], $2},",
+      "  ...$1.slice(index + 1),",
+      "]);"
+    ],
+    "description": "Update at index"
+  },
+  "Add event listener": {
+    "scope": "javascriptreact",
+    "prefix": "el",
+    "body": [
+      "useEffect(() => {",
+      "  const handle$1 = ({$3}) => {",
+      "    $0",
+      "  };",
+      "  document.addEventListener('$2', handle$1);",
+	  "  return () => document.removeEventListener('$2', handle$1);",
+	  "});"
+    ],
+    "description": "Add event listener"
+  }
+}' >.vscode/crancos.code-snippets
+
 # update git repo
 git add -A
-git commit -m "setup tailwind"
+git commit -m "setup tailwind, css rules, snippets"
 
 # Open project with vscode, if it's installed
 if command -v code &>/dev/null; then
