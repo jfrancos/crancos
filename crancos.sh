@@ -10,11 +10,8 @@ if [ ! -f "$BASE"/package.json ]; then
   BASE="$(dirname "$BASE")"/lib/node_modules/"$(basename "$0")"
 fi
 
-# Get absolute path
+# Make sure we have absolute path
 BASE="$(cd "$BASE" && pwd)"
-
-echo "$BASE"
-ls "$BASE"
 
 TEMPLATE=app-template-react
 APP=App.jsx
