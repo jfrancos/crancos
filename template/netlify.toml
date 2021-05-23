@@ -1,6 +1,5 @@
 [dev]
   framework = "#custom"
-  #port = 8888
   command = "snowpack dev"
   targetPort = 3000
   #autoLaunch = false
