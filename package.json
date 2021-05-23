@@ -2,10 +2,10 @@
     "name": "crancos",
     "version": "1.4.1",
     "license": "MIT",
-    "homepage": "https://github.com/jfrancos/create-twspr-app",
+    "homepage": "https://github.com/jfrancos/crancos",
     "repository": {
       "type": "git",
-      "url": "https://github.com/jfrancos/create-twspr-app.git"
+      "url": "https://github.com/jfrancos/crancos.git"
     },
     "bin": {
       "crancos": "./crancos.sh"
