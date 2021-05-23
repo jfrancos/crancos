@@ -27,7 +27,7 @@ npx create-snowpack-app $1 --template @snowpack/"$TEMPLATE"
 cd $1
 
 # Install modules necessary for tailwind (tailwind runs via postcss)
-npm install -D tailwindcss @snowpack/plugin-postcss @jadex/snowpack-plugin-tailwindcss-jit
+npm install -D autoprefixer tailwindcss @snowpack/plugin-postcss @jadex/snowpack-plugin-tailwindcss-jit
 npm install react-icons clsx
 npm install -g netlify-cli
 
