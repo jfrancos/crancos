@@ -39,12 +39,12 @@ module.exports.devOptions.open = \"none\"
 
 # Replace sample code with a minimal, full-screen app
 rm src/App.css src/logo.svg
-mv src/App.jsx src/"$APP"
 
 # Add minimal postcss and tailwind config files
 # Setup css file to incorporate tailwind + set default div display
 # Copy snippets file
 cp -r "$BASE"/template/. .
+mv src/App.jsx src/"$APP"
 
 # update git repo
 git add -A
