@@ -46,6 +46,14 @@ rm src/App.css src/logo.svg
 cp -r "$BASE"/template/. .
 mv src/App.jsx src/"$APP"
 
+CLOUD_INIT="[ -d .netlify ] || netlify link --id \$(netlify sites:create -a \$(node -e 'console.log(JSON.parse(process.argv[1]).slug)' \\\"\\\$(netlify api getCurrentUser)\\\") -n' ' | grep 'Site ID' | grep -o '[a-z0-9-]*$')"
+
+TUNNEL="npm run cloud-init ; netlify dev --live"
+
+PACKAGE="$(cat package.json)"
+
+node -e "const package = $PACKAGE; console.log(JSON.stringify({...package, scripts: {...package.scripts, 'cloud-init': \"$CLOUD_INIT\", 'tunnel': \"$TUNNEL\" }}, null, 2))" > package.json
+
 # update git repo
 git add -A
 git commit -m "setup tailwind, css rules, snippets"
