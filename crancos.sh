@@ -28,11 +28,14 @@ cd $1
 
 # Install modules necessary for tailwind (tailwind runs via postcss)
 npm install -D tailwindcss @snowpack/plugin-postcss @jadex/snowpack-plugin-tailwindcss-jit
-npm install react-icons
+npm install react-icons clsx
+npm install -g netlify-cli
 
 # Adjust snowpack.config.js for tailwind
 echo "module.exports.plugins = module.exports.plugins.concat(['@snowpack/plugin-postcss', '@jadex/snowpack-plugin-tailwindcss-jit'])
-module.exports.devOptions.port = 3000" >>snowpack.config.js
+module.exports.devOptions.port = 3000
+module.exports.devOptions.open = \"none\"
+" >>snowpack.config.js
 
 # Replace sample code with a minimal, full-screen app
 rm src/App.css src/logo.svg
