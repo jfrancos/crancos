@@ -1,20 +1,24 @@
 {
-    "name": "crancos",
-    "version": "1.5.0",
-    "license": "MIT",
-    "homepage": "https://github.com/jfrancos/crancos",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/jfrancos/crancos.git"
-    },
-    "bin": {
-      "crancos": "./crancos.sh"
-    },
-    "keywords": [
-        "create",
-        "tailwind",
-        "snowpack",
-        "react",
-        "app"
-      ]
-  }
+  "name": "crancos",
+  "version": "1.5.0",
+  "license": "MIT",
+  "homepage": "https://github.com/jfrancos/crancos",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfrancos/crancos.git"
+  },
+  "scripts": {
+    "preinstall": "./preinstall.sh"
+  },
+  "bin": {
+    "crancos": "./crancos.sh"
+  },
+  "keywords": [
+    "create",
+    "tailwind",
+    "snowpack",
+    "react",
+    "app",
+    "csa-template"
+  ]
+}

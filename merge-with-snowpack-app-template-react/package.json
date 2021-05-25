@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "cloud-init": "[ -d .netlify ] || netlify link --id $(netlify sites:create -a $(node -e 'console.log(JSON.parse(process.argv[1]).slug)' \"$(netlify api getCurrentUser)\") -n' ' | grep 'Site ID' | grep -o '[a-z0-9-]*$')",
+    "tunnel": "npm run cloud-init ; netlify dev --live",
+  },
+  "dependencies": {
+    "clsx": "^1.1.1",
+    "react-icons": "^4.2.0"
+  },
+  "devDependencies": {
+    "@jadex/snowpack-plugin-tailwindcss-jit": "^0.3.0",
+    "@snowpack/plugin-postcss": "^1.4.0",
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.3.0",
+    "tailwindcss": "^2.1.2"
+  }
+}
