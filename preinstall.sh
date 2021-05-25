@@ -46,7 +46,10 @@ rm "$REACT_SKEL_PATH"/package.json
 rm "$CRANCOS_SKEL_PATH"/package.json
 
 # Merge snowpack.config
-cp "$REACT_SKEL_PATH"/snowpack.config.mjs .
+
+
+cp "$REACT_SKEL_PATH"/snowpack.config.mjs ./snowpack-base.config.mjs
+
 cat "$CRANCOS_SKEL_PATH"/snowpack.config.mjs >> snowpack.config.mjs
 rm "$REACT_SKEL_PATH"/snowpack.config.mjs
 rm "$CRANCOS_SKEL_PATH"/snowpack.config.mjs
