@@ -1,53 +1,39 @@
 #!/bin/bash
 # CRA a la Francos
 
-# If we're running locally, $BASE (package contents) is CWD:
-BASE="$(dirname "$0")"
+CWD="$(pwd)"
+INVOKED_PACKAGE="$(ps -p $(echo "$PPID") -o command= | cut -d" " -f3)"
 
-# Else if we're running via npx, $BASE
-# is CWD/../lib/node_modules/[package name]:
-if [ ! -f "$BASE"/package.json ]; then
-  BASE="$(dirname "$BASE")"/lib/node_modules/"$(basename "$0")"
-fi
+JS_TEMPLATE_VER=2.1.2
+TS_TEMPLATE_VER=2.1.3
 
-# Make sure we have absolute path
-BASE="$(cd "$BASE" && pwd)"
-
-JS_TEMPLATE=@snowpack/app-template-react@2.1.2
+JS_TEMPLATE=@snowpack/app-template-react
 TS_TEMPLATE=@snowpack/app-template-react-typescript
-TEMPLATE="$JS_TEMPLATE"
 
-if [[ "$1" == --ts ]] ; then
+TEMPLATE="$JS_TEMPLATE"
+TEMPLATE_VER="$JS_TEMPLATE_VER"
+
+if [[ "$1" == --ts ]]; then
     shift
     TEMPLATE="$TS_TEMPLATE"
-    mv "$CRANCOS_SKEL_PATH/src/App.jsx" "$CRANCOS_SKEL_PATH/src/App.tsx"
+    TEMPLATE_VER="$TS_TEMPLATE_VER"
 fi
-REACT_SKEL_PATH=package
-CRANCOS_SKEL_PATH=merge-with-snowpack-app-template-react
 
-if [ -f $1 ]; then
+REACT_SKEL_PATH="$CWD/$1/node_modules/$TEMPLATE"
+CRANCOS_SKEL_PATH=../merge-with-snowpack-app-template-react
+
+if [ -e $1 ]; then
     echo -e "\033[0;31m$1" already exists, exiting
     exit
 fi
 
-mkdir -p "$1"/template
-cd "$1"/template
-TARBALL="$(npm pack "$TEMPLATE")"
-tar xzf "$TARBALL"
-cp -r "$BASE"/merge-with-snowpack-app-template-react .
+mkdir "$1"
+cd "$1"
+echo {} > package.json
+npm install "$INVOKED_PACKAGE" "$TEMPLATE@$TEMPLATE_VER"
 
-# exit
-
-# cd ../..
-
-# BASENAME="$(basename "$(pwd)")"
-
-
-# add versions to templates
-# if done as a template I will need two versions 
-# in order to have a ts version
-# if not done as a template I can have ts as an option
-
+mkdir node_modules/"$INVOKED_PACKAGE"/build
+cd node_modules/"$INVOKED_PACKAGE"/build
 
 # Merge package.json
 REACT_PACKAGE="$(cat "$REACT_SKEL_PATH"/package.json)"
@@ -87,7 +73,7 @@ node -e "
         2
     )
     console.log(newPackage)
-" >../package.json
+" >./package.json
 rm "$REACT_SKEL_PATH"/package.json
 rm "$CRANCOS_SKEL_PATH"/package.json
 
@@ -100,7 +86,10 @@ rm "$CRANCOS_SKEL_PATH"/snowpack.config.mjs
 # Merge src
 mv "$CRANCOS_SKEL_PATH"/src src
 cp "$REACT_SKEL_PATH"/src/index.?sx src/
-rm -rf "$REACT_SKEL_PATH"/src 
+if [ -f src/index.tsx ]; then
+    mv src/App.jsx src/App.tsx
+fi
+rm -rf "$REACT_SKEL_PATH"/src
 
 # Merge everything else
 shopt -s dotglob
@@ -109,17 +98,10 @@ mv "$CRANCOS_SKEL_PATH"/* .
 rm -rf "$REACT_SKEL_PATH" "$CRANCOS_SKEL_PATH" "$TARBALL"
 rm -rf "$TARBALL" install.sh
 
-
-mv ./* ..
-cd ..
-rm -rf template
-npm install
-
-git init
-git add -A
-git commit -m "initial commit"
-
+cd "$CWD"
+npx create-snowpack-app "$1" --template "./$1/node_modules/$INVOKED_PACKAGE/build" --force
 
 if command -v code &>/dev/null; then
-  code . -g "$(ls src/App.?sx)":9:7
+    cd "$1"
+    code . -g "$(ls src/App.?sx)":9:7
 fi

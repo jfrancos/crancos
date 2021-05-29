@@ -1,14 +1,11 @@
 {
   "name": "@jfrancos/crancos",
-  "version": "1.6.6",
+  "version": "1.6.23",
   "license": "MIT",
   "homepage": "https://github.com/jfrancos/crancos",
   "repository": {
     "type": "git",
     "url": "https://github.com/jfrancos/crancos.git"
-  },
-  "scridpts": {
-    "install": "./install.sh"
   },
   "bin": {
     "crancos": "./crancos.sh"
