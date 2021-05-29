@@ -1,6 +1,9 @@
 #!/bin/bash
 # CRA a la Francos
 
+# //next -- update npm, check on netlify stuff
+# 
+
 CWD="$(pwd)"
 INVOKED_PACKAGE="$(ps -p $(echo "$PPID") -o command= | cut -d" " -f3)"
 
@@ -41,7 +44,7 @@ CRANCOS_PACKAGE="$(cat "$CRANCOS_SKEL_PATH"/package.json)"
 NETLIFY_PATH="$(command -v netlify)"
 
 if [ -z "$NETLIFY_PATH" ]; then
-    echo -e "\033[0;31m"Crancos will take an extra ~40s, to install netlify-cli.
+    echo -e "\033[0;31m"Installing netlify-cli will take an extra ~40s.
     echo -e "\033[0;31m"Install it globally e.g. using \`nvm\` to improve the time it takes to \"create app\"
     INSTALL_NETLIFY="\"netlify-cli\": \"^3.30.3\""
 fi

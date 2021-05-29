@@ -1,6 +1,6 @@
 {
   "name": "@jfrancos/crancos",
-  "version": "1.6.23",
+  "version": "1.7.0",
   "license": "MIT",
   "homepage": "https://github.com/jfrancos/crancos",
   "repository": {
@@ -15,7 +15,6 @@
     "tailwind",
     "snowpack",
     "react",
-    "app",
-    "csa-template"
+    "app"
   ]
 }
