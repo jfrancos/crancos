@@ -1,11 +1,9 @@
 #!/bin/bash
 # CRA a la Francos
 
-# //next -- update npm, check on netlify stuff
-# 
-
 CWD="$(pwd)"
-INVOKED_PACKAGE="$(ps -p $(echo "$PPID") -o command= | cut -d" " -f3)"
+INVOKED_BIN="$(node -e "console.log(require('fs').realpathSync(\"$0\"))")"
+INVOKED_PACKAGE="$(dirname "$INVOKED_BIN")"
 
 JS_TEMPLATE_VER=2.1.2
 TS_TEMPLATE_VER=2.1.3
@@ -22,21 +20,22 @@ if [[ "$1" == --ts ]]; then
     TEMPLATE_VER="$TS_TEMPLATE_VER"
 fi
 
-REACT_SKEL_PATH="$CWD/$1/node_modules/$TEMPLATE"
-CRANCOS_SKEL_PATH=../merge-with-snowpack-app-template-react
-
 if [ -e $1 ]; then
     echo -e "\033[0;31m$1" already exists, exiting
     exit
 fi
 
-mkdir "$1"
-cd "$1"
+mkdir -p "$1"/tmp
+cd "$1"/tmp
 echo {} > package.json
-npm install "$INVOKED_PACKAGE" "$TEMPLATE@$TEMPLATE_VER"
+npm install "$TEMPLATE@$TEMPLATE_VER"
+cp -r "$INVOKED_PACKAGE/merge-with-snowpack-app-template-react" .
 
-mkdir node_modules/"$INVOKED_PACKAGE"/build
-cd node_modules/"$INVOKED_PACKAGE"/build
+REACT_SKEL_PATH="$CWD/$1/tmp/node_modules/$TEMPLATE"
+CRANCOS_SKEL_PATH="$CWD/$1/tmp/merge-with-snowpack-app-template-react"
+
+mkdir build
+cd build
 
 # Merge package.json
 REACT_PACKAGE="$(cat "$REACT_SKEL_PATH"/package.json)"
@@ -102,7 +101,8 @@ rm -rf "$REACT_SKEL_PATH" "$CRANCOS_SKEL_PATH" "$TARBALL"
 rm -rf "$TARBALL" install.sh
 
 cd "$CWD"
-npx create-snowpack-app "$1" --template "./$1/node_modules/$INVOKED_PACKAGE/build" --force
+npx create-snowpack-app "$1" --template "./$1/tmp/build" --force
+rm -rf "$1/tmp"
 
 if command -v code &>/dev/null; then
     cd "$1"
