@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { magic } from "./magic";
 import { FaReact } from "react-icons/fa";
 
 // https://react-icons.github.io/react-icons/icons

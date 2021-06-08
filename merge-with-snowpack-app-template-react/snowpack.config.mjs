@@ -6,5 +6,5 @@ config.plugins = config.plugins.concat([
 ]);
 config.devOptions.port = 3000;
 config.devOptions.open = "none";
-
-export default config
+config.env = { MAGIC_PUBLISHABLE_KEY: "" };
+export default config;

@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "magic-sdk": "^4.3.0",
     "react-icons": "^4.2.0"
   },
   "devDependencies": {
