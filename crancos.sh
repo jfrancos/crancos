@@ -101,7 +101,7 @@ rm -rf "$REACT_SKEL_PATH" "$CRANCOS_SKEL_PATH" "$TARBALL"
 rm -rf "$TARBALL" install.sh
 
 cd "$CWD"
-npx create-snowpack-app "$1" --template "./$1/tmp/build" --force
+npx create-snowpack-app@1.10.0 "$1" --template "./$1/tmp/build" --force
 rm -rf "$1/tmp"
 
 if command -v code &>/dev/null; then
