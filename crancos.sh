@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # CRA a la Francos
 
 CWD="$(pwd)"
