@@ -1,8 +1,14 @@
 [dev]
-  framework = "#custom"
-  command = "snowpack dev"
-  targetPort = 3000
-  #autoLaunch = false
+command = "npx snowpack dev"
+framework = "#custom"
+targetPort = 3000
+#autoLaunch = false
 
 [build]
-  publish = "build"
+functions = "functions"
+publish = "build"
+
+[[redirects]]
+from = "/api/*"
+status = 200
+to = "/.netlify/functions/:splat"

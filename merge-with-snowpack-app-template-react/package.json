@@ -4,8 +4,10 @@
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "fastify": "^3.17.0",
     "magic-sdk": "^4.3.0",
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.2.0",
+    "serverless-http": "^2.7.0"
   },
   "devDependencies": {
     "@jadex/snowpack-plugin-tailwindcss-jit": "^0.3.0",
