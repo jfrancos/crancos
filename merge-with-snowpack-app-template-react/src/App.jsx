@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { magic } from "./magic";
+import { Auth } from "./Auth";
 import { FaReact } from "react-icons/fa";
 
 // https://react-icons.github.io/react-icons/icons
@@ -18,14 +18,17 @@ function App() {
   });
 
   return (
-    <div className="h-full w-full justify-center items-center">
-      <div className="grid">
-        <FaReact className="grid-overlay h-96 w-96 text-purple-100" />
-        <div className="grid-overlay justify-center items-center">
-          {message}
+    <>
+      <Auth />
+      <div className="h-full w-full justify-center items-center">
+        <div className="grid">
+          <FaReact className="grid-overlay h-96 w-96 text-purple-100" />
+          <div className="grid-overlay justify-center items-center">
+            {message}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -3,6 +3,7 @@
     "tunnel": ".scripts/cloud-init.sh ; netlify dev --live"
   },
   "dependencies": {
+    "@jfrancos/suoli": "^0.0.5",
     "clsx": "^1.1.1",
     "fastify": "^3.17.0",
     "magic-sdk": "^4.3.0",
