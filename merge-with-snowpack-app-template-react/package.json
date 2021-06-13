@@ -7,6 +7,7 @@
   "dependencies": {
     "@jfrancos/suoli": "^0.0.5",
     "clsx": "^1.1.1",
+    "dotenv": "^8.6.0",
     "fastify": "^3.17.0",
     "faunadb": "^4.3.0",
     "graphql": "^15.5.0",

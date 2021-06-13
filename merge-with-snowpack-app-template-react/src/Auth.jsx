@@ -28,6 +28,21 @@ const Auth = () => {
     }
   };
 
+  useEffect(async () => {
+    if (user) {
+      const response = await fetch('/api/auth', {
+        method: 'post',
+        body: JSON.stringify(user),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const { secret } = await response.json();
+      console.log(secret);
+    }
+  });
+
+
   // useEffect(() => {
   //   magic.user.logout()
   // })

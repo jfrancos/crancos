@@ -1,4 +1,8 @@
 type User {
   email: String! @unique
-  magic_id: String! @unique
+  magic_id: ID! @unique
+}
+
+type Query {
+  user_by_magic_id(magic_id: ID!): User!
 }
