@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "tunnel": ".scripts/cloud-init.sh ; netlify dev --live"
+    "tunnel": ".scripts/cloud-init.sh ; netlify dev --live",
+    "upload-schema": ".scripts/create-fauna.mjs && .scripts/upload-schema.mjs"
   },
   "dependencies": {
     "@jfrancos/suoli": "^0.0.5",

@@ -1,0 +1,4 @@
+type User {
+  email: String! @unique
+  magic_id: String! @unique
+}

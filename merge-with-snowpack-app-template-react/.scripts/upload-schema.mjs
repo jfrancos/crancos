@@ -5,7 +5,6 @@ import { join } from 'path';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import fetch from 'node-fetch';
-import './create-fauna.mjs';
 
 const topLevel = execSync('git rev-parse --show-toplevel', {
   encoding: 'utf-8',
