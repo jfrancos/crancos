@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Magic, RPCError } from "magic-sdk";
-import { Suoli } from "@jfrancos/suoli";
+import React, { useState, useEffect } from 'react';
+import { Suoli } from '@jfrancos/suoli';
+import { Magic, RPCError } from 'magic-sdk';
 const { MAGIC_PUBLISHABLE_KEY } = import.meta.env;
 
 let magic;
@@ -22,30 +22,11 @@ const Auth = () => {
       if (err instanceof RPCError) {
         setLoginError(err.rawMessage);
       } else {
-        console.log("Unknown error");
+        console.log('Unknown error');
         throw err;
       }
     }
   };
-
-  useEffect(async () => {
-    if (user) {
-      const response = await fetch('/api/auth', {
-        method: 'post',
-        body: JSON.stringify(user),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const { secret } = await response.json();
-      console.log(secret);
-    }
-  });
-
-
-  // useEffect(() => {
-  //   magic.user.logout()
-  // })
 
   useEffect(async () => {
     try {
@@ -65,4 +46,5 @@ const Auth = () => {
     />
   ) : null;
 };
+
 export { Auth };

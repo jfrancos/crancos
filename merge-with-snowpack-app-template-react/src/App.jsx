@@ -1,35 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Auth } from "./Auth";
-import { FaReact } from "react-icons/fa";
-
-// https://react-icons.github.io/react-icons/icons
+import React, { useState, useEffect, useRef } from 'react';
+import { Auth } from './Auth';
+import { FaReact } from 'react-icons/fa';
+import { Provider, CreateDoc, DocsByUser } from './Client';
+import { useQuery, useMutation } from 'urql';
 
 function App() {
-  const [message, setMessage] = useState("Loading...");
+  return (
+    <Provider>
+      <Auth />
+      <Controller />
+    </Provider>
+  );
+}
 
+const Controller = () => {
+  const [message, setMessage] = useState('Loading...');
+  
   useEffect(async () => {
     try {
-      const response = await fetch("/api/message", { method: "post" });
+      const response = await fetch('/api/message', { method: 'post' });
       const { message } = await response.json();
       setMessage(message);
     } catch {
-      setMessage("api inaccessible, try `netlify dev`");
+      setMessage('api inaccessible, try `netlify dev`');
     }
   });
 
   return (
-    <>
-      <Auth />
-      <div className="h-full w-full justify-center items-center">
-        <div className="grid">
-          <FaReact className="grid-overlay h-96 w-96 text-purple-100" />
-          <div className="grid-overlay justify-center items-center">
-            {message}
-          </div>
+    <div className="h-full w-full justify-center items-center">
+      <div className="grid">
+        <FaReact className="grid-overlay h-96 w-96 text-purple-100" />
+        <div className="grid-overlay justify-center items-center">
+          {message}
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
 
 export default App;
