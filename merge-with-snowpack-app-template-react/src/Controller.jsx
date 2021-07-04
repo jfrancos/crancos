@@ -14,7 +14,7 @@ const Controller = () => {
     const [createDocResult, createDoc] = useMutation(CreateDoc);
     const [deleteDocResult, deleteDoc] = useMutation(DeleteDoc);
     const [updateDocResult, updateDoc] = useMutation(UpdateDoc);
-    
+
     useEffect(async () => {
       try {
         const response = await fetch('/api/message', { method: 'post' });
@@ -36,6 +36,5 @@ const Controller = () => {
       </div>
     );
   };
-  
 
   export default Controller
