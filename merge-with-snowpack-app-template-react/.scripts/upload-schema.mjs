@@ -53,6 +53,24 @@ const {
     method: 'POST',
   });
   console.log(result.statusText);
+
+  
+  // next up -- try out downloading schema
+  // result = await fetch('https://graphql.fauna.com/graphql', {
+  //   body: JSON.stringify({
+  //     variables: {},
+  //     query: getIntrospectionQuery({ descriptions: false }),
+  //   }),
+  //   headers: {
+  //     Authorization: 'Bearer ' + FAUNA_SECRET,
+  //     'Content-Type': 'application/json',
+  //   },
+  //   method: 'POST',
+  // });
+  // console.log(JSON.stringify(await result.json(), null, 2));
+  // return
+  
+
   if (result.status !== 200) {
     return;
   }
