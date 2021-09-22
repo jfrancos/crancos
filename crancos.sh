@@ -106,5 +106,5 @@ rm -rf "$1/tmp"
 
 if command -v code &>/dev/null; then
     cd "$1"
-    code . -g "$(ls src/App.?sx)":9:7
+    code . -g "$(ls src/Controller.?sx)":8
 fi
