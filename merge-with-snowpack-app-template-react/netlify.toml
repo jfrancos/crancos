@@ -1,7 +1,5 @@
 [dev]
-command = "npx snowpack dev"
 framework = "#custom"
-targetPort = 3000
 #autoLaunch = false
 
 [build]

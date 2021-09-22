@@ -9,6 +9,7 @@ const { FAUNA_SECRET, MAGIC_SECRET } = process.env;
 const magic = new Magic(MAGIC_SECRET);
 
 const client = new faunadb.Client({ secret: FAUNA_SECRET });
+
 const sleep = (ms) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -42,12 +43,16 @@ const getFaunaSecret = async (token) => {
         ref: q.Select(['ref'], q.Var('user')),
         token: q.Create(q.Tokens(), {
           instance: q.Var('ref'),
-          ttl: q.TimeAdd(q.Now(), 15, 'minutes'),
+          ttl: q.TimeAdd(q.Now(), 8, 'hours'),
+          // for testing:
+          // ttl: q.TimeAdd(q.Now(), 15, 'minutes'),
+          // ttl: q.TimeAdd(q.Now(), 15, 'seconds'),
         }),
       },
       {
-        token: q.Select(['secret'], q.Var('token')),
-        fauna_id: q.Select(['ref', 'id'], q.Var('user')),
+        secret: q.Select(['secret'], q.Var('token')),
+        expires: q.ToMillis(q.Select(['ttl'], q.Var('token'))),
+        // ref: q.Select(['ref', 'id'], q.Var('user')),
         // email: q.Select(['data', 'email'], q.Var('user')),
         // created: q.Not(q.Var('alreadyExists')),
       },
@@ -56,6 +61,11 @@ const getFaunaSecret = async (token) => {
 };
 
 fastify.post('/api/token', async ({ body }) => {
-  return await getFaunaSecret(body);
+  // console.log(body)
+  const info = await getFaunaSecret(body);
+  console.log(info);
+  return info;
+  // return await getFaunaSecret(body);
 });
+
 module.exports.handler = serverless(fastify);

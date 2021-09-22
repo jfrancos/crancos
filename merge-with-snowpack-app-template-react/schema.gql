@@ -1,22 +1,30 @@
-type Doc {
-  owner: User!
-  booleanData: Boolean
-  dateData: Date
-  floatData: Float
-  intData: Int
-  longData: Long
-  stringData: String
-  timeData: Time
-}
-
-type User {
-  docs: [Doc!] @relation
-  magic_id: ID! @unique
-  # email: String! @unique
-}
 
 type Query {
-  # docs_by_owner(owner: User!): [Doc!]
-  user_by_magic_id(magic_id: ID!): User!
-  # user_by_email(email: String!): User!
+  feedDocuments(id: String, ts: Long, limit: Int!): [Document!]!
+    @resolver(name: "feed_documents")
+}
+
+type Mutation {
+  setDocument(document: DocumentInput): Document
+    @resolver(name: "set_document")
+}
+
+type Document {
+  stringData: String
+  booleanData: Boolean
+  numberData: Float
+
+  id: String!
+  updatedAt: Long!
+  deleted: Boolean!
+}
+
+input DocumentInput {
+  stringData: String
+  booleanData: Boolean
+  numberData: Float
+
+  id: String!
+  updatedAt: Long!
+  deleted: Boolean!
 }
