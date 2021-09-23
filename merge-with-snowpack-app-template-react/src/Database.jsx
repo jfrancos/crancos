@@ -109,11 +109,12 @@ const cycleAuth = async ({ db, name, replicationState }) => {
     console.log('pulling');
     const query = `{
           feedDocuments(id: "${doc.id}", ts: ${doc.ts}, limit: 5) {
-              id,
-              stringData,
-              numberData,
-              booleanData,
-              updatedAt,
+              id
+              stringData
+              numberData
+              booleanData
+              updatedAt
+              createdAt
               deleted
               ts: _ts
           }
