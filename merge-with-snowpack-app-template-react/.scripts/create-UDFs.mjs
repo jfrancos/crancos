@@ -37,6 +37,7 @@ const {
   CreateIndex,
   CreateCollection,
   Collection,
+  GT,
   Query,
   Lambda,
   Equals,
