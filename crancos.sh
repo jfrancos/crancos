@@ -103,6 +103,7 @@ rm -rf "$TARBALL" install.sh
 cd "$CWD"
 npx create-snowpack-app@1.10.0 "$1" --template "./$1/tmp/build" --force
 rm -rf "$1/tmp"
+sed -i '' "s/requireReturnsDefault: 'auto'/requireReturnsDefault: 'preferred'/" "$1/node_modules/esinstall/lib/index.js"
 
 if command -v code &>/dev/null; then
     cd "$1"
