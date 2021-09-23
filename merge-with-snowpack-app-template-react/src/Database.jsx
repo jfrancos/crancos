@@ -231,6 +231,9 @@ const addCollection = async (db, name) => {
   db[name].preSave((data) => {
     data.updatedAt = Date.now();
   });
+  db[name].preRemove((data) => {
+    data.updatedAt = Date.now();
+  })
 };
 
 const useCollection = (name) => {

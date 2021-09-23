@@ -127,28 +127,33 @@ const {
     Update(Function('set_document'), {
       role: 'server',
       body: Query(
-        Lambda(
-          ['newdoc'],
-          Let(
-            {
-              document: Match(Index('id'), [
-                CurrentIdentity(),
-                Select('id', Var('newdoc')),
-              ]),
-              _: Update(CurrentIdentity(), {}),
-            },
-            If(
-              Exists(Var('document')),
-              Update(Select('ref', Get(Var('document'))), {
-                data: Var('newdoc'),
-              }),
-              Create(Collection('Document'), {
-                data: Merge(Var('newdoc'), { owner: CurrentIdentity() }),
-              }),
-            ),
+  Lambda(
+    ["newdoc"],
+    Let(
+      {
+        document: Match(Index("id"), [
+          CurrentIdentity(),
+          Select("id", Var("newdoc"))
+        ]),
+        _: Update(CurrentIdentity(), {})
+      },
+      If(
+        Exists(Var("document")),
+        If(
+          GT(
+            Select(["updatedAt"], Var("newdoc")),
+            Select(["data", "updatedAt"], Get(Var("document")))
           ),
+          Update(Select("ref", Get(Var("document"))), { data: Var("newdoc") }),
+          null
         ),
-      ),
+        Create(Collection("Document"), {
+          data: Merge(Var("newdoc"), { owner: CurrentIdentity() })
+        })
+      )
+    )
+  )
+)
     }),
     Update(Function('feed_documents'), {
       name: 'feed_documents',
