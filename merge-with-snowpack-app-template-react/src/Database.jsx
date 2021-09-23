@@ -47,6 +47,9 @@ const schema = {
     updatedAt: {
       type: 'number',
     },
+    createdAt: {
+      type: 'number',
+    },
     stringData: {
       type: 'string',
     },
@@ -60,8 +63,8 @@ const schema = {
       type: 'number',
     },
   },
-  indexes: ['updatedAt'],
-  required: ['id', 'updatedAt'],
+  indexes: ['updatedAt', 'createdAt'],
+  required: ['id', 'updatedAt', 'createdAt'],
 };
 
 const _create = async () => {
@@ -221,7 +224,8 @@ const addCollection = async (db, name) => {
   });
   db[name].preInsert((data) => {
     data.id = uuidv4();
-    data.updatedAt = Date.now();
+    // data.updatedAt = Date.now();
+    data.createdAt = data.updatedAt = Date.now();
   });
   db[name].preSave((data) => {
     data.updatedAt = Date.now();
@@ -249,8 +253,8 @@ const useCollection = (name) => {
       if (!db[name]) {
         await addCollection(db, name);
         db[name]
-          .find({ selector: {} })
-          // .find({ selector: {}, sort: [{ updatedAt: 'asc' }] })
+          // .find({ selector: {} })
+          .find({ selector: {}, sort: [{ createdAt: 'asc' }] })
           .$.subscribe(setDocuments);
         setCollection(db[name]);
       }

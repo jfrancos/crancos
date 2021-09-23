@@ -16,6 +16,7 @@ type Document {
 
   id: String!
   updatedAt: Long!
+  createdAt: Long!
   deleted: Boolean!
 }
 
@@ -26,5 +27,6 @@ input DocumentInput {
 
   id: String!
   updatedAt: Long!
+  createdAt: Long!
   deleted: Boolean!
 }
