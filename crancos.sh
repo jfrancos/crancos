@@ -106,7 +106,8 @@ cd "$CWD"
 npx create-snowpack-app@1.10.0 "$1" --template "./$1/tmp/build" --force
 rm -rf "$1/tmp"
 # Create hidden files
-echo ".env
+echo "
+.env
 .netlify" >> "$1/.gitignore" # >> add to CSA's gitignore
 echo "MAGIC_SECRET=
 FAUNA_SECRET=" > "$1/.env" # > create new file
