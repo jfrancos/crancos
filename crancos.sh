@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # CRA a la Francos
 
 CWD="$(pwd)"
@@ -94,15 +94,24 @@ fi
 rm -rf "$REACT_SKEL_PATH"/src
 
 # Merge everything else
-shopt -s dotglob
-mv "$REACT_SKEL_PATH"/* .
-mv "$CRANCOS_SKEL_PATH"/* .
+# shopt -s dotglob
+cp -r "$REACT_SKEL_PATH"/. .
+cp -r "$CRANCOS_SKEL_PATH"/. .
+# mv "$CRANCOS_SKEL_PATH"/.scripts .
+# mv "$CRANCOS_SKEL_PATH"/.vscode .
 rm -rf "$REACT_SKEL_PATH" "$CRANCOS_SKEL_PATH" "$TARBALL"
 rm -rf "$TARBALL" install.sh
 
 cd "$CWD"
 npx create-snowpack-app@1.10.0 "$1" --template "./$1/tmp/build" --force
 rm -rf "$1/tmp"
+# Create hidden files
+echo ".env
+.netlify" >> "$1/.gitignore" # >> add to CSA's gitignore
+echo "MAGIC_SECRET=
+FAUNA_SECRET=" > "$1/.env" # > create new file
+
+# https://github.com/snowpackjs/snowpack/pull/3660
 sed -i '' "s/requireReturnsDefault: 'auto'/requireReturnsDefault: 'preferred'/" "$1/node_modules/esinstall/lib/index.js"
 
 if command -v code &>/dev/null; then
