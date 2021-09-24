@@ -33,7 +33,7 @@ const Controller = () => {
     collection.bulkRemove(checked.map((task) => task.id));
   };
 
-  // goal: make it easy to create arbitrary indices in-browser
+  // make it easy to create arbitrary indices in-browser
   // to avoid sorting like this:
   const checked = tasks.filter((task) => task.booleanData === true);
   const percentChecked = checked.length / tasks.length;
@@ -113,6 +113,8 @@ const Task = ({
   setEditing,
   id,
 }) => {
+  const [input, setInput] = useState('');
+
   const [ref] = useOutsideClickRef(() => {
     if (editing === id) {
       setEditing(null);
@@ -128,10 +130,12 @@ const Task = ({
   };
 
   const handleStartEdit = () => {
+    setInput(title);
     setEditing(id);
   };
 
   const handleInput = async ({ target: { value } }) => {
+    setInput(value);
     await atomicPatch({ stringData: value });
   };
 
@@ -145,10 +149,18 @@ const Task = ({
       </div>
       <div className="flex-1 block truncate">
         {editing === id ? (
-          <input className="w-full" value={title} onChange={handleInput} />
+          <input className="w-full" value={input} onChange={handleInput} />
         ) : (
           title
         )}
+        {/* {editing === id ? (
+          // <input className="w-full" value={title} onChange={handleInput} />
+          <input className="w-full" value={input} onChange={handleInput} />
+        ) : input !== '' ? (
+          input
+        ) : (
+          title
+        )} */}
       </div>
       <HiPencil className="h-5 w-5" onClick={handleStartEdit} />
       <HiX className="h-5 w-5" onClick={handleRemove} />
