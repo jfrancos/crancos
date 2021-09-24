@@ -94,17 +94,15 @@ fi
 rm -rf "$REACT_SKEL_PATH"/src
 
 # Merge everything else
-# shopt -s dotglob
 cp -r "$REACT_SKEL_PATH"/. .
 cp -r "$CRANCOS_SKEL_PATH"/. .
-# mv "$CRANCOS_SKEL_PATH"/.scripts .
-# mv "$CRANCOS_SKEL_PATH"/.vscode .
 rm -rf "$REACT_SKEL_PATH" "$CRANCOS_SKEL_PATH" "$TARBALL"
 rm -rf "$TARBALL" install.sh
 
 cd "$CWD"
 npx create-snowpack-app@1.10.0 "$1" --template "./$1/tmp/build" --force
 rm -rf "$1/tmp"
+
 # Create hidden files
 echo "
 .env
