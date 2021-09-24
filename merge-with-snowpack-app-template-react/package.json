@@ -23,7 +23,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@jadex/snowpack-plugin-tailwindcss-jit": "^0.3.0",
     "@snowpack/plugin-postcss": "^1.4.0",
     "autoprefixer": "^10.2.5",
     "postcss": "^8.3.0",
