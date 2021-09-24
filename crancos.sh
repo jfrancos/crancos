@@ -14,7 +14,7 @@ TS_TEMPLATE=@snowpack/app-template-react-typescript
 TEMPLATE="$JS_TEMPLATE"
 TEMPLATE_VER="$JS_TEMPLATE_VER"
 
-if [[ "$1" == --ts ]]; then
+if [ "$1" = --ts ]; then
     shift
     TEMPLATE="$TS_TEMPLATE"
     TEMPLATE_VER="$TS_TEMPLATE_VER"
