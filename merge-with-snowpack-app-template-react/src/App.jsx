@@ -2,9 +2,9 @@ import React from "react";
 import { Auth } from "./Auth";
 import Controller from "./Controller";
 
-const { MODE } = __SNOWPACK_ENV__;
+// const { MODE } = __SNOWPACK_ENV__;
 
-console.log({ MODE });
+// console.log({ MODE });
 
 // if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
@@ -12,13 +12,14 @@ console.log({ MODE });
 // not actually unregistering in dev since
 // MODE still shows up as production
 
-if ("serviceWorker" in navigator && MODE === "production") {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
+if (typeof __SNOWPACK_ENV__ === 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
   });
-}
-
-if ("serviceWorker" in navigator && MODE === "development") {
+} else if (
+  'serviceWorker' in navigator &&
+  __SNOWPACK_ENV__.MODE === 'development'
+) {
   (async () => {
     const registrations = await navigator.serviceWorker.getRegistrations();
     console.log(registrations);
@@ -35,3 +36,17 @@ function App() {
 }
 
 export default App;
+
+// if ("serviceWorker" in navigator && !__SNOWPACK_ENV__) {
+//   window.addEventListener("load", () => {
+//     navigator.serviceWorker.register("/sw.js");
+//   });
+// }
+
+// if ("serviceWorker" in navigator && __SNOWPACK_ENV__?.MODE === "development") {
+//   (async () => {
+//     const registrations = await navigator.serviceWorker.getRegistrations();
+//     console.log(registrations);
+//     registrations.forEach((registration) => registration.unregister());
+//   })();
+// }
