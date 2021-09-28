@@ -4,7 +4,7 @@ Or, in the words of Alan Kay:
 > # Simple things should be simple
 
 This is a CRA-style template you can use to create reactive[1] offline-first user-document-based apps, and it takes under five minutes to set up.  To achieve this, I've integrated:
-- RxDB (browser-based NoSQL database)
+- RxDB (browser-based NoSQL database with PouchDB under the hood)
 - FaunaDB (cloud data storage)
 - Magic (passwordless auth and session management)
 - An npm run script that implements RxDB's GraphQL replication plugin requirements via FQL
@@ -58,16 +58,20 @@ Also out-of-the-box:
 ### Conflict resolution
 
 When the same user is logged into two different browsers and they both go offline, "conflicts" arise when the same document (e.g. a todo item) is updated in both browsers in different ways.  When they reconnect, they'll both let the server (Fauna) know about these updates, and only one of these versions can "win". Should the final state of the document be determined by:
-- The browser that came online second?  or
+- The browser that came online most recently?  or
 - The browser with the most recent document update?
 
 There's no automatic answer, but I think the latter is the better default, and that's how I've setup the FQL.
-In addition, _deletion_ is considered to be a quality of a document (this is per RxDB's/couchDB's replication spec).  Thus documents removed in RxDB are never actually deleted from the server, they literally just get a `deleted: true` property (this is necessary to properly sync deleted documents when offline devices come online).
+In addition, _deletion_ is considered to be a quality of a document (this is per RxDB's replication spec).  Thus documents removed in RxDB are never actually deleted from the server, they just get a `deleted: true` property (this is necessary to properly sync deleted documents when offline devices come online).
 
 ### Schema
 
-Making this as schemaless a setup as possible is a priority, but for now, schema needs to be changed in a few places...
-Plus will have purge application data...
+The goal here is schemaless if possible, but at the moment there are two schemas going on here: one in Fauna's GraphQL interface, and one in RxDB's interface.  I've setup a generic schema with `booleanData`, `numberData`, and `stringData`.  To update it, you'll have to adjust:
+
+- `schema` and `pullQueryBuilder` in `Documents.jsx`, 
+- `Document` and `DocumentInput` in `schema.gql`
+
+before doing `npm run provision-fauna` (note to self: make it easy to reprovision).  I know, it's a drag.  You may also need to purge application data with (in the js console) Application -> Storage -> Clear site data
 
 ### Please consider this to be at the "proof of concept" stage
 
@@ -88,35 +92,12 @@ Some other things I think about include:
 - If there were a "log out all other sessions" button, would it make sense for that to also purge deleted documents?
 - How can the npx command complete more quickly?
 
+Misc:
 
-
-A tour if the innards
-
-
-`npx crancos [--ts] [project-name]`
-
-Bootstraps an environment analogous to create-react-app, but with [Snowpack](https://www.snowpack.dev/) and [Tailwind](https://tailwindcss.com)
-
-**Please NB the CSS file sets up all divs with `display: flex;`**
-
-The above command will run a script that:
-
-1. Runs `create-snowpack-app` (this is more specifically analogous to `create-react-app`)
-   
-2. Installs `npm` packages and sets up config files necessary for Tailwind (including [Xeevis' patch](https://github.com/jadex/snowpack-plugin-tailwindcss-jit) for getting jit working with snowpack)
-
-3. Installs react-icons
-
-4. Adds some CSS that
-   1. sets all divs to use `display: flex` by default
-
-   2. creates a `grid-overlay` class for `div` superimposition  sans `relative`/`absolute`
-
-5. Replaces the default CRA page with a more minimal one (which demonstrates `grid-overlay`)
-
-6. Opens up your main App file in vscode (if it's installed)
-
-7. Takes under 30 seconds on my 2017 Core i7
-
-
-[^1]: My reference.
+NB `./src/index.css` has
+```
+div {
+  display: flex;
+}
+```
+(a personal preference that should probably be extracted into a separate package)
