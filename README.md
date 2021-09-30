@@ -46,14 +46,16 @@ Also out-of-the-box:
    MAGIC_SECRET=sk_live_...
    FAUNA_SECRET=fn...
    ```
-5. `npm run provision-fauna`
-6. `npm run dev`
+6. `npm run provision-fauna`
+7. `npm run dev`
 
 (continued after video)
 
+Chrome on the left, [Brave](https://brave.com/) on the right:
+
 https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-b9da-5693bb170311.mp4
 
-7. Replace the contents of `Controller.jsx` with your own very special time-managmentment app, video game, or other user-document-based app:
+8. Replace the contents of `Controller.jsx` with your own very special time-managmentment app, video game, or other user-document-based app:
     
     In the custom hook `const [collection, tasks] = useCollection('documents');`
     
