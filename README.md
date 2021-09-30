@@ -50,6 +50,11 @@ Also out-of-the-box:
 6. `npm run dev`
 
 
+
+https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-b9da-5693bb170311.mp4
+
+
+
 ### Kinds of offline-first
 
 - **User data** is offline-first via RxDB.  This works automatically in both `dev` and `build` (`npm run build`) modes.
