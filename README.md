@@ -49,16 +49,23 @@ Also out-of-the-box:
 5. `npm run provision-fauna`
 6. `npm run dev`
 
-
+(continued after video)
 
 https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-b9da-5693bb170311.mp4
 
-
+7. Replace the contents of `Controller.jsx` with your own very special time-managmentment app, video game, or other user-document-based app:
+    
+    In the custom hook `const [collection, tasks] = useCollection('documents');`
+    
+    - `collection` here is an [RxDB Collection](https://rxdb.info/rx-collection.html)
+    
+    - `tasks` here is an [observed query](https://rxdb.info/rx-query.html#observe-) that returns all documents sorted by creation time
+      - It would be nice to define the query as a parameter to the hook -- as it is, it's defined within the hooks definition in `Database.jsx` (one reason I am calling this a "proof of concept")
 
 ### Kinds of offline-first
 
 - **User data** is offline-first via RxDB.  This works automatically in both `dev` and `build` (`npm run build`) modes.
-- **The react site itself** is offline-first via [workbox](https://developers.google.com/web/tools/workbox/modules/workbox-cli).  This doesn't work in `dev` mode.  But with `npm run build`, you can kill the server, and the page will still reload.  To then update the site, you'll have to remove the cached site via Developer Tools -> Application -> Storage -> Clear site data
+- **The static site itself** is offline-first via [workbox](https://developers.google.com/web/tools/workbox/modules/workbox-cli).  This doesn't work in `dev` mode.  But with `npm run build`, you can kill the server, and the page will still reload.  To then update the site, you'll have to remove the cached site via Developer Tools -> Application -> Storage -> Clear site data
 
 ### Conflict resolution
 
