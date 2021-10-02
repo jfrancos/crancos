@@ -1,9 +1,8 @@
-Once you've created the basic meat of your user-document-based app, it shouldn't take any extra time to make it reactive and offline-first.
+## Reactive[1], offline-first per-user documents out of the box with [Fauna](https://fauna.com) and [Magic](https://magic.link)
 
-Or, in the words of Alan Kay:
-> # Simple things should be simple
+### Have a demo up and running in under five minutes
 
-This is a CRA-style template you can use to create reactive[1] offline-first user-document-based apps, and it takes under five minutes to set up.  To achieve this, I've integrated:
+This is a CRA-style template you can use to create reactive[1] offline-first per-user-document-based apps.  To achieve this, I've integrated:
 - [RxDB](https://rxdb.info/) (browser-based NoSQL database with PouchDB under the hood)
 - [FaunaDB](https://fauna.com/) (cloud data storage)
 - [Magic](https://magic.link/) (passwordless auth and session management)
@@ -89,7 +88,7 @@ before doing `npm run provision-fauna` (note to self: make it easy to reprovisio
 
 ### This is a "proof of concept", not a release
 
-There is still a lot to do here.  My priorities at the moment:
+There is still a lot to do here.  Priorities at the moment:
 - Schemaless.  Right now Fauna/GraphQL needs to know about a schema, as well as RxDB, and this seems unnecessary, especially since you're not directly using GraphQL to retrieve or manipulate data.  I have two main ideas here:
    - Adapt RxDB's [CouchDB replication plugin](https://github.com/pubkey/rxdb/blob/master/src/plugins/replication-couchdb.ts) to FQL and tell RxDB we're using any old object
    - Instead of using RxDB, create something from scratch that has an interface similar to [useArray](https://github.com/kitze/react-hanger/blob/master/README-ARRAY.md#usearray) and implements replication similar to CouchDB
