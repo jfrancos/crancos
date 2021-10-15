@@ -10,6 +10,7 @@ This is a CRA-style template you can use to create reactive[1] offline-first per
 - A custom `useCollection` hook that exposes an [RxDB collection](https://rxdb.info/rx-collection.html) and a reactive[2] query
 
 Also out-of-the-box:
+- [Stripe](https://stripe.com/) (accept subscription payments)
 - [Snowpack](https://www.snowpack.dev/) (frontend build)
 - [Tailwind](https://tailwind.dev/) (utility-first CSS)
 - [React](https://reactjs.org/) (user interface)
