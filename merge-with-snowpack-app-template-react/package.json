@@ -3,7 +3,9 @@
     "dev": "netlify dev --targetPort=3000 -c 'snowpack dev --polyfill-node' ",
     "build": "snowpack build --polyfill-node && workbox generateSW && netlify dev -d build",
     "provision-fauna": ".scripts/create-UDFs.mjs",
-    "diff": "git diff -- ':!package-lock.json'"
+    "diff": "git diff -- ':!package-lock.json'",
+    "provision-stripe": ".scripts/add-stripe.mjs",
+    "ngrok": ".scripts/ngrok-stripe.mjs"
   },
   "dependencies": {
     "@jfrancos/suoli": "^0.0.7",
@@ -20,11 +22,13 @@
     "rooks": "^5.7.1",
     "rxdb": "10.0.3",
     "serverless-http": "^2.7.0",
+    "stripe": "^8.181.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@snowpack/plugin-postcss": "^1.4.0",
     "autoprefixer": "^10.2.5",
+    "ngrok": "^4.2.2",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.1.2",
     "workbox-cli": "^6.3.0"

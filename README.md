@@ -23,30 +23,36 @@ Also out-of-the-box:
 
 0. You have a text editor such as [VS Code](https://code.visualstudio.com/download), and accounts at [fauna.com](https://dashboard.fauna.com/accounts/register) and [magic.link](https://dashboard.magic.link/signup)
 1. `npx crancos [your-project]`
-   - You can do steps (2) and (3) while (1) is running
-2. Get public and private keys from [magic.link](https://dashboard.magic.link/app/all_apps)
+   - You can do steps (2), (3), and (4) while (1) is running
+2. Get public and private keys from [Magic](https://dashboard.magic.link/app/all_apps)
       - "All Apps" -> "New App"
       - Choose a name
       - Save
-3. Get a private key from [fauna](https://dashboard.fauna.com/)
+3. Get a private key from [Fauna](https://dashboard.fauna.com/)
    - "CREATE DATABASE"
       - Choose a name
       - Any Region Group is fine, "Classic" is a good default
       - CREATE
    - Security -> NEW KEY -> SAVE (use defaults)
-4. Put your public magic key into `snowpack.config.mjs`:
+4. Get a private key from [Stripe](https://dashboard.stripe.com/test/developers)
+   - Top-left: New account
+   - Bottom-right: Secret key
+5. Put your public magic key into `snowpack.config.mjs`:
    ```
    ...
    config.env = { MAGIC_PUBLISHABLE_KEY: 'pk_live_...' };`
    ...
    ```
-5. Put your private magic and fauna keys into .env:
+6. Put your private Magic, Fauna and Stripe keys into `.env`:
    ```
    MAGIC_SECRET=sk_live_...
    FAUNA_SECRET=fn...
+   STRIPE_SECRET=sk_test_...
    ```
-6. `npm run provision-fauna`
-7. `npm run dev`
+7. `npm run provision-fauna`
+8. `npm run provision-stripe`
+9. `npm run dev`
+10. (in a second terminal) `npm run ngrok` (auto-tunnel for your stripe endpoint)
 
 (continued after video)
 
@@ -54,7 +60,7 @@ Chrome on the left, [Brave](https://brave.com/) on the right:
 
 https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-b9da-5693bb170311.mp4
 
-8. Replace the contents of `Controller.jsx` with your own very special time-managmentment app, video game, or other user-document-based app:
+11. Replace the contents of `Controller.jsx` with your own very special time-managmentment app, video game, or other user-document-based app:
     
     In the custom hook `const [collection, tasks] = useCollection('documents');`
     
@@ -94,7 +100,6 @@ There is still a lot to do here.  Priorities at the moment:
    - Instead of using RxDB, create something from scratch that has an interface similar to [useArray](https://github.com/kitze/react-hanger/blob/master/README-ARRAY.md#usearray) and implements replication similar to CouchDB
 - Include manifest to make a full PWA out of the box
 - There are a lot of parts to this project, and maybe e.g. RxDB/Document.jsx should be its own package
-- Add some kind of automated [Stripe](https://stripe.com/) setup
 - Arbitrary document ordering, perhaps with [mudderjs](https://github.com/fasiha/mudderjs)?
 - Convert to TypeScript
 - Testing

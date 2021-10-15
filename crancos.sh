@@ -108,7 +108,8 @@ echo "
 .env
 .netlify" >> "$1/.gitignore" # >> add to CSA's gitignore
 echo "MAGIC_SECRET=
-FAUNA_SECRET=" > "$1/.env" # > create new file
+FAUNA_SECRET=
+STRIPE_SECRET=" > "$1/.env" # > create new file
 
 # https://github.com/snowpackjs/snowpack/pull/3660
 sed -i. "s/requireReturnsDefault: 'auto'/requireReturnsDefault: 'preferred'/" "$1/node_modules/esinstall/lib/index.js"

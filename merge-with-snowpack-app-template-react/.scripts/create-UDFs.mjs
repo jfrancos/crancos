@@ -97,6 +97,16 @@ const {
       ],
     }),
     CreateIndex({
+      name: 'user_by_stripe_id',
+      unique: true,
+      source: Collection('User'),
+      terms: [
+        {
+          field: ['data', 'stripe_id'],
+        },
+      ],
+    }),
+    CreateIndex({
       name: 'ts',
       source: Collection('Document'),
       terms: [

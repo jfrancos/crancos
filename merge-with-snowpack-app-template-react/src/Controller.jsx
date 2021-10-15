@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useCollection } from './Database';
 import { HiPlus, HiX, HiPencil, HiCheck } from 'react-icons/hi';
 import { useKey, useOutsideClickRef } from 'rooks'; // react-recipes looks great too
+import { UserMetadata } from './Auth';
 
 const Controller = () => {
+  const user = useContext(UserMetadata);
   const [editing, setEditing] = useState(null);
   const [collection, tasks] = useCollection('documents');
   const [inputValue, setInputValue] = useState('');
@@ -46,11 +48,11 @@ const Controller = () => {
       <div className="bg-gray-300 sm:h-2/3 sm:w-2/3 md:h-1/2 md:w-1/2 h-full w-full max-w-2xl rounded-md flex-col py-6 gap-y-4">
         {/* Main box */}
         <div
-          className="self-center font-bold text-3xl .leading-none"
+          className="self-center font-semibold text-2xl .leading-none"
           style={{ lineHeight: 0.75 }}
         >
           {/* Row: title */}
-          TODOLIST
+          TodoList {user?.plan}
         </div>
         <div className="mx-8 gap-x-4 h-8">
           {/* Row: Text input, Add button */}
