@@ -92,6 +92,10 @@ The goal here is schemaless if possible, but at the moment there are two schemas
 
 before doing `npm run provision-fauna` (note to self: make it easy to reprovision).  I know, it's a drag.  You may also need to purge application data with Developer Tools -> Application -> Storage -> Clear site data
 
+### Stripe plans
+
+To update your stripe plans, see [`add-stripe.mjs`](https://github.com/jfrancos/crancos/blob/main/merge-with-snowpack-app-template-react/.scripts/add-stripe.mjs)
+
 ### This is a "proof of concept", not a release
 
 There is still a lot to do here.  Priorities at the moment:
