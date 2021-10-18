@@ -23,7 +23,7 @@ Also out-of-the-box:
 ## Try it out
 
 0. You have a text editor such as [VS Code](https://code.visualstudio.com/download), and accounts at [fauna.com](https://dashboard.fauna.com/accounts/register), [magic.link](https://dashboard.magic.link/signup), and [stripe.com](https://dashboard.stripe.com/register)
-1. `npx crancos [your-project]`
+1. `npx @jfrancos/crancos [your-project]`
    - You can do steps (2), (3), and (4) while (1) is running
 2. Get public and private keys from [Magic](https://dashboard.magic.link/app/all_apps)
       - "All Apps" -> "New App"
