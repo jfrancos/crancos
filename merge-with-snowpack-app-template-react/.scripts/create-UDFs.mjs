@@ -1,35 +1,12 @@
 #!/usr/bin/env node
 
-// import { parse } from 'ini';
-import { join } from 'path';
-import { execSync } from 'child_process';
-import fs from 'fs';
-import fetch from 'node-fetch';
-// import { parse as parseSchema } from 'graphql';
-// require('dotenv').config();
-import dotenv from 'dotenv';
-import faunadb from 'faunadb';
+import dotenv from "dotenv";
+import faunadb from "faunadb";
 
 dotenv.config();
 const { query: q } = faunadb;
 const { FAUNA_SECRET } = process.env;
-
-const topLevel = execSync('git rev-parse --show-toplevel', {
-  encoding: 'utf-8',
-}).trim();
-
-// why not just use dotenv instead of ini?
-
-// const envPath = join(topLevel, '.env');
-// const envFile = fs.readFileSync(envPath, 'utf-8');
-// const { FAUNA_SECRET } = parse(envFile);
 const client = new faunadb.Client({ secret: FAUNA_SECRET });
-
-const schemaPath = join(topLevel, 'schema.gql');
-const schema = fs.readFileSync(schemaPath, 'utf-8');
-// const types = parseSchema(schema)
-//   .definitions.map((item) => item.name.value)
-//   .filter((item) => !['User', 'Query'].includes(item));
 
 const {
   CreateRole,
@@ -61,23 +38,7 @@ const {
   Index,
 } = q;
 
-// should make sure this won't disturb existing data (?)
-
 (async () => {
-  process.stdout.write('Sending schema... ');
-  // fetch('https://graphql.fauna.com/import?mode=override', {
-  let result = await fetch('https://graphql.fauna.com/import?mode=replace', {
-    body: schema,
-    headers: {
-      Authorization: 'Bearer ' + FAUNA_SECRET,
-    },
-    method: 'POST',
-  });
-  console.log(result.statusText);
-  if (result.status !== 200) {
-    return;
-  }
-
   // need to create ts and id indeces
   // allow id and ts conditional perms (although should just use one for user + ts/ref)
   // set conditional perms for documents
@@ -87,156 +48,175 @@ const {
 
   const FQL = [
     CreateIndex({
-      name: 'user_by_magic_id',
+      name: "user_by_magic_id",
       unique: true,
-      source: Collection('User'),
+      source: Collection("User"),
       terms: [
         {
-          field: ['data', 'magic_id'],
+          field: ["data", "magic_id"],
         },
       ],
     }),
     CreateIndex({
-      name: 'user_by_stripe_id',
+      name: "user_by_stripe_id",
       unique: true,
-      source: Collection('User'),
+      source: Collection("User"),
       terms: [
         {
-          field: ['data', 'stripe_id'],
+          field: ["data", "stripe_id"],
         },
       ],
     }),
     CreateIndex({
-      name: 'ts',
-      source: Collection('Document'),
+      name: "ts",
+      source: Collection("Document"),
       terms: [
         {
-          field: ['data', 'owner'],
+          field: ["data", "owner"],
         },
       ],
       values: [
         {
-          field: ['ts'],
+          field: ["ts"],
         },
         {
-          field: ['ref'],
+          field: ["ref"],
         },
       ],
     }),
     CreateIndex({
-      name: 'id',
-      source: Collection('Document'),
+      name: "id",
+      source: Collection("Document"),
       terms: [
         {
-          field: ['data', 'owner'],
+          field: ["data", "owner"],
         },
         {
-          field: ['data', 'id'],
+          field: ["data", "id"],
         },
       ],
     }),
-    Update(Function('set_document'), {
-      role: 'server',
+    CreateFunction({
+      name: "set",
+      role: "server",
       body: Query(
         Lambda(
-          ['newdoc'],
-          Let(
-            {
-              document: Match(Index('id'), [
-                CurrentIdentity(),
-                Select('id', Var('newdoc')),
-              ]),
-              _: Update(CurrentIdentity(), {}),
-            },
-            If(
-              Exists(Var('document')),
-              If(
-                GT(
-                  Select(['updatedAt'], Var('newdoc')),
-                  Select(['data', 'updatedAt'], Get(Var('document'))),
-                ),
-                Update(Select('ref', Get(Var('document'))), {
-                  data: Var('newdoc'),
-                }),
-                null,
-              ),
-              Create(Collection('Document'), {
-                data: Merge(Var('newdoc'), { owner: CurrentIdentity() }),
-              }),
-            ),
-          ),
-        ),
+          "newdocs",
+          Foreach(
+            Var("newdocs"),
+            Lambda(
+              "newdoc",
+              Let(
+                {
+                  document: Match(Index("id"), [
+                    CurrentIdentity(),
+                    Select("id", Var("newdoc")),
+                  ]),
+                  _: Update(CurrentIdentity(), {}),
+                },
+                If(
+                  Exists(Var("document")),
+                  If(
+                    GT(
+                      Select(["updatedAt"], Var("newdoc")),
+                      Select(["data", "updatedAt"], Get(Var("document")))
+                    ),
+                    Update(Select("ref", Get(Var("document"))), {
+                      data: Var("newdoc"),
+                    }),
+                    null
+                  ),
+                  Create(Collection("Document"), {
+                    data: Merge(Var("newdoc"), { owner: CurrentIdentity() }),
+                  })
+                )
+              )
+            )
+          )
+        )
       ),
     }),
-    Update(Function('feed_documents'), {
-      name: 'feed_documents',
-      role: 'server',
+    CrateFunction({
+      name: "feed",
+      role: "server",
       body: Query(
         Lambda(
-          ['id', 'ts', 'limit'],
-          Map(
-            Select(
-              'data',
-              Paginate(
+          ["id", "ts"],
+          Let(
+            {
+              matches: Paginate(
                 Range(
-                  Match(Index('ts'), CurrentIdentity()),
-                  Add(1, Var('ts')),
-                  [],
-                ),
+                  Match(Index("ts"), CurrentIdentity()),
+                  Add(1, Var("ts")),
+                  []
+                )
               ),
-            ),
-            Lambda('item', Get(Select(1, Var('item')))),
-          ),
-        ),
+            },
+            {
+              hasMoreDocuments: Not(
+                IsNull(Select("after", Var("matches"), null))
+              ),
+              documents: Map(
+                Select("data", Var("matches")),
+                Lambda(
+                  "item",
+                  Let(
+                    { doc: Get(Select(1, Var("item"))) },
+                    Merge(Select("data", Var("doc")), [
+                      { ts: Select("ts", Var("doc")) },
+                      { owner: null },
+                    ])
+                  )
+                )
+              ),
+            }
+          )
+        )
       ),
     }),
     CreateRole({
-      name: 'document-role',
+      name: "document-role",
       privileges: [
         {
-          // resource: Ref(Ref('functions'), 'feed_documents'),
-          resource: Function('feed_documents'),
+          // resource: Ref(Ref('functions'), 'feed'),
+          resource: Function("feed"),
           actions: {
             call: true,
           },
         },
         {
-          // resource: Ref(Ref('functions'), 'set_document'),
-          resource: Function('set_document'),
+          // resource: Ref(Ref('functions'), 'set'),
+          resource: Function("set"),
           actions: {
             call: true,
           },
         },
         {
-          resource: Collection('User'),
+          resource: Collection("User"),
           actions: {
-            read: Query(Lambda('ref', Equals(CurrentIdentity(), Var('ref')))),
+            read: Query(Lambda("ref", Equals(CurrentIdentity(), Var("ref")))),
           },
         },
       ],
       membership: [
         {
-          resource: Collection('User'),
+          resource: Collection("User"),
         },
       ],
     }),
   ];
 
-  // const roles = types.map((type) =>
-
-  // );
-  // console.log('Configuring roles for', types);
-
-  //7
-
   try {
-    let result = await client.query(
-      CreateCollection({
-        name: 'User',
-      }),
-    );
     // Collection can't be used in the same transaction
     // where it's created
+    let result = await client.query([
+      CreateCollection({
+        name: "User",
+      }),
+      CreateCollection({
+        name: "Document",
+      }),
+    ]);
     console.log(result);
     result = await client.query(FQL);
     console.log(result);
