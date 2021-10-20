@@ -2,12 +2,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { RxDBValidatePlugin } from 'rxdb/plugins/validate';
 import { addRxPlugin, createRxDatabase } from 'rxdb/plugins/core';
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
-import {
-  RxDBReplicationGraphQLPlugin,
-  pullQueryBuilderFromRxSchema,
-  pushQueryBuilderFromRxSchema,
-  graphQLSchemaFromRxSchema,
-} from 'rxdb/plugins/replication-graphql';
+import { replicateRxCollection } from 'rxdb/plugins/replication';
 import idb from 'pouchdb-adapter-idb';
 import { v4 as uuidv4 } from 'uuid';
 import faunadb from 'faunadb';
@@ -69,28 +64,7 @@ const schema = {
 
 const _create = async () => {
   addRxPlugin(RxDBValidatePlugin);
-  addRxPlugin(RxDBReplicationGraphQLPlugin);
   addPouchPlugin(idb);
-
-  // graphQLGenerationInput = {
-  //   documents: {
-  //     schema,
-  //     feedKeys: ['id'],
-  //     deletedFlag: 'deleted',
-  //     ignoreInputKeys: ['ts'],
-  //     // I don't know what this does, it was in the example:
-  //     subscriptionParams: {
-  //       token: 'String!',
-  //     },
-  //   },
-  // };
-
-  // gqlSchema = graphQLSchemaFromRxSchema(graphQLGenerationInput);
-
-  // console.log(gqlSchema.asString)
-
-  // how to make use of pullQueryBuilderFromRxSchema?
-  // (ts: _ts is issue)
 
   console.log('creating db');
   const db = await createRxDatabase({
@@ -103,95 +77,54 @@ const _create = async () => {
 
 const cycleAuth = async ({ db, name, replicationState }) => {
   const { expires, secret } = await getAuth();
-
-  const pullQueryBuilder = (doc) => {
-    doc = doc || { id: '', ts: 0 };
-    console.log('pulling');
-    const query = `{
-          feedDocuments(id: "${doc.id}", ts: ${doc.ts}, limit: 5) {
-              id
-              stringData
-              numberData
-              booleanData
-              updatedAt
-              createdAt
-              deleted
-              ts: _ts
-          }
-      }`;
-    return {
-      query,
-      variables: {},
-    };
-  };
-
-  const pushQueryBuilder = pushQueryBuilderFromRxSchema(
-    'document',
-    // graphQLGenerationInput.documents,
-    // graphQLGenerationInput[name],
-    {
-      schema,
-      feedKeys: ['id'],
-      deletedFlag: 'deleted',
-      ignoreInputKeys: ['ts'],
-      // I don't know what this does, it was in the example:
-      subscriptionParams: {
-        token: 'String!',
-      },
-    },
-  );
-
-  const pushQueryBuilder2 = (doc) => {
-    console.log('pushing', doc);
-    return pushQueryBuilder(doc);
-  };
-
-  if (db) {
-    // replicationState = db.documents.syncGraphQL({
-    replicationState = db[name].syncGraphQL({
-      url: 'https://graphql.fauna.com/graphql',
-      push: {
-        // batchSize,
-        queryBuilder: pushQueryBuilder2,
-      },
-      pull: {
-        queryBuilder: pullQueryBuilder,
-      },
-      live: true,
-      liveInterval: 1000 * 60 * 10, // 10 minutes
-      deletedFlag: 'deleted',
-    });
-    replicationState.error$.subscribe(async (err) => {
-      console.log('replication error:', err.innerErrors);
-      err.innerErrors.map(async ({ message, code }) => {
-        console.log({ message });
-        console.log({ code });
-        if (expires && Date.now() > expires) {
-          console.log('replication: cycling auth');
-          await cycleAuth({ replicationState });
-        }
-        console.log(message);
-      });
-    });
-  }
-  replicationState.setHeaders({
-    Authorization: `Bearer ${secret}`,
-  });
   if (fauna.client) {
     await fauna.client.close();
   }
   fauna.client = new faunadb.Client({ secret });
+
+  if (db) {
+    replicationState = await replicateRxCollection({
+      collection: db[name],
+      replicationIdentifier: 'documents-replication',
+      live: true,
+      liveInterval: 10000000,
+      pull: {
+        handler: async (lastPull) => {
+          const { ts, id } = lastPull || { ts: 0, id: null };
+          return await fauna.client.query(q.Call('feed', null, ts));
+        },
+      },
+      push: {
+        handler: async (docs) => {
+          fauna.client.query(q.Call('set', docs));
+        },
+        batchSize: 64,
+      },
+    });
+
+    replicationState.error$.subscribe(async (err) => {
+      console.log('replication error:', err.innerErrors);
+      err?.innerErrors?.map(async ({ message, code }) => {
+        console.log({ message });
+        console.log({ code });
+        console.log(message);
+      });
+      if (expires && Date.now() > expires) {
+        console.log('replication: cycling auth');
+        await cycleAuth({ replicationState });
+      }
+    });
+  }
+
   const setupStream = async () => {
     if (fauna.stream) {
       fauna.stream.close();
     }
-    fauna.stream = fauna.client.stream
-      .document(q.CurrentIdentity())
-      .on('snapshot', () => {
-        replicationState.run();
-      })
+    fauna.stream = fauna.client
+      // .stream(q.Index('ts'))
+      .stream.document(q.CurrentIdentity())
       .on('version', (data) => {
-        // console.log({ data });
+        console.log({ data });
         replicationState.run();
       })
       .on('error', async (error) => {
@@ -233,7 +166,7 @@ const addCollection = async (db, name) => {
   });
   db[name].preRemove((data) => {
     data.updatedAt = Date.now();
-  })
+  });
 };
 
 const useCollection = (name) => {
@@ -250,6 +183,7 @@ const useCollection = (name) => {
 
       let db = await getDatabase();
       if (loggingOff) {
+        console.log('Loggin off');
         await db[name]?.remove();
         await db.remove();
         location.reload();
