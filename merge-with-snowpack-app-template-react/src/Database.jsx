@@ -96,7 +96,7 @@ const cycleAuth = async ({ db, name, replicationState }) => {
       },
       push: {
         handler: async (docs) => {
-          fauna.client.query(q.Call('set', docs));
+          await fauna.client.query(q.Call('set', docs));
         },
         batchSize: 64,
       },
