@@ -79,9 +79,9 @@ https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-
 
 ```
 const [collection, [query-result1, query-result2, ...]] = useCollection(
-   collection-name,
-   [mongo-style-query1, mongo-style-query2, ...],
-   [index1, index2, ...]
+  collection-name,
+  [mongo-style-query1, mongo-style-query2, ...],
+  [index1, index2, ...]
 )
 ```
 
@@ -105,10 +105,10 @@ const [collection, [query-result1, query-result2, ...]] = useCollection(
 The underlying RxDB collections have a schema, but from the `useCollection` user's point of view, this setup is schemaless - just make sure all your data is stored inside the `data` object e.g.:
 ```
 collection.insert({
-    data: {
-        completed: false,
-        title: inputValue,
-    }
+  data: {
+    completed: false,
+    title: inputValue,
+  }
 });
 ```
 
@@ -157,7 +157,7 @@ Misc:
 ```
 
 div {
-   display: flex;
+  display: flex;
 }
 
 ```
