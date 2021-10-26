@@ -3,22 +3,19 @@
 ### Have a demo up and running in under five minutes
 
 This is a CRA-style template you can use to create reactive[1] offline-first per-user-document-based apps. To achieve this, I've integrated:
-
 - [RxDB](https://rxdb.info/) (browser-based NoSQL database with PouchDB under the hood)
 - [FaunaDB](https://fauna.com/) (cloud data storage)
 - [Magic](https://magic.link/) (passwordless auth and session management)
 - [An npm run script](https://github.com/jfrancos/crancos/blob/main/merge-with-snowpack-app-template-react/.scripts/create-UDFs.mjs) that implements [RxDB's replication plugin requirements](https://rxdb.info/replication.html) via [FQL](https://docs.fauna.com/fauna/current/api/fql/cheat_sheet)
-- A custom `useCollection` hook that exposes an [RxDB collection](https://rxdb.info/rx-collection.html) and any number of reactive[2] queries:
+- A custom `useCollection` hook that exposes an [RxDB collection](https://rxdb.info/rx-collection.html) and any number of reactive[2] queries (usage below):
 
-  ```
-  const [collection, [query-result1, query-result2, ...]] = useCollection(
-    collection-name,
-    [mongo-style-query1, mongo-style-query2, ...],
-    [index1, index2, ...]
-  )
-  ```
-
-  (usage below)
+```
+const [collection, [query-result1, query-result2, ...]] = useCollection(
+  collection-name,
+  [mongo-style-query1, mongo-style-query2, ...],
+  [index1, index2, ...]
+)
+```
 
 Also out-of-the-box:
 
