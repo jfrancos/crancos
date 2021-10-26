@@ -1,20 +1,30 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { useCollection } from './Database';
+import { useCollection } from './lib/ReplicatedCollection';
 import { HiPlus, HiX, HiPencil, HiCheck } from 'react-icons/hi';
 import { useKey, useOutsideClickRef } from 'rooks'; // react-recipes looks great too
-import { UserMetadata } from './Auth';
+import { UserContext } from './lib/UserContext';
 
 const Controller = () => {
-  const user = useContext(UserMetadata);
+  const [user] = useContext(UserContext);
   const [editing, setEditing] = useState(null);
-  const [collection, tasks] = useCollection('documents');
+  const [collection, [tasks, checked]] = useCollection(
+    'documents',
+    [
+      { selector: {}, sort: [{ createdAt: 'asc' }] },
+      {
+        selector: { 'data.completed': true },
+      },
+    ],
+    ['data.completed'],
+  );
   const [inputValue, setInputValue] = useState('');
 
   const handleAdd = () => {
     collection.insert({
-      stringData: inputValue,
-      booleanData: false,
-      numberData: 0,
+      data: {
+        completed: false,
+        title: inputValue,
+      },
     });
     setInputValue('');
   };
@@ -35,13 +45,8 @@ const Controller = () => {
     collection.bulkRemove(checked.map((task) => task.id));
   };
 
-  // make it easy to create arbitrary indices in-browser
-  // to avoid sorting like this:
-  const checked = tasks.filter((task) => task.booleanData === true);
   const percentChecked = checked.length / tasks.length;
   const transform = `scaleX(${percentChecked})`;
-
-  console.log('new');
 
   return (
     <div className="h-full w-full justify-center items-center  bg-blue-300">
@@ -68,13 +73,13 @@ const Controller = () => {
         </div>
         <div className="flex-col overflow-auto flex-1">
           {/* Row: Tasks */}
-          {tasks.map(({ atomicPatch, remove, id, booleanData, stringData }) => (
+          {tasks.map(({ atomicPatch, atomicUpdate, remove, id, data }) => (
             <Task
-              completed={booleanData}
-              title={stringData}
+              data={data}
               editing={editing}
               setEditing={setEditing}
               key={id}
+              atomicUpdate={atomicUpdate}
               atomicPatch={atomicPatch}
               remove={remove}
               id={id}
@@ -108,10 +113,9 @@ const Controller = () => {
 
 const Task = ({
   editing,
-  atomicPatch,
+  atomicUpdate,
   remove,
-  title,
-  completed,
+  data: { completed, title },
   setEditing,
   id,
 }) => {
@@ -123,8 +127,11 @@ const Task = ({
     }
   });
 
-  const handleCheck = () => {
-    atomicPatch({ booleanData: !completed });
+  const handleCheck = async () => {
+    await atomicUpdate((data) => {
+      data.data.completed = !data.data.completed;
+      return data;
+    });
   };
 
   const handleRemove = () => {
@@ -138,7 +145,11 @@ const Task = ({
 
   const handleInput = async ({ target: { value } }) => {
     setInput(value);
-    await atomicPatch({ stringData: value });
+    await atomicUpdate((data) => {
+      data.data.title = value;
+      return data;
+    });
+    // await atomicPatch({ data: { title: value } });
   };
 
   return (

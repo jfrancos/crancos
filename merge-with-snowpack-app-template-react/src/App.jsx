@@ -1,6 +1,7 @@
-import React from "react";
-import { Auth } from "./Auth";
-import Controller from "./Controller";
+import React, { useState, useEffect, useRef } from 'react';
+import { Auth } from './Auth';
+import Controller from './Controller';
+import { UserContext } from './lib/UserContext';
 
 // const { MODE } = __SNOWPACK_ENV__;
 
@@ -28,10 +29,29 @@ if (typeof __SNOWPACK_ENV__ === 'undefined' && 'serviceWorker' in navigator) {
 }
 
 function App() {
+  const [user, setUser] = useState();
+
+  const updateUser = async () => {
+    try {
+      setUser((user) => ({ ...user, loading: true }));
+      const metadata = await magic.user.getMetadata();
+      console.log('Auth: setting user', { metadata });
+      setUser((user) => ({ ...user, magic: metadata, loading: false }));
+    } catch {
+      console.log('Auth: setting user to null');
+      setUser(null);
+    }
+  };
+
+  useEffect(async () => {
+    await updateUser();
+  }, []);
+
   return (
-    <Auth>
+    <UserContext.Provider value={[user, setUser]}>
       <Controller />
-    </Auth>
+      <Auth />
+    </UserContext.Provider>
   );
 }
 

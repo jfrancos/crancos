@@ -1,23 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Suoli } from '@jfrancos/suoli';
-import { Magic, RPCError } from 'magic-sdk';
 import { FaUserCircle } from 'react-icons/fa';
 import { useOutsideClickRef } from 'rooks';
 import { CgSpinner } from 'react-icons/cg';
-
-const { MAGIC_PUBLISHABLE_KEY } = import.meta.env;
-
-let magic;
-
-if (MAGIC_PUBLISHABLE_KEY) {
-  magic = new Magic(MAGIC_PUBLISHABLE_KEY, { testMode: false });
-}
+import { magic, RPCError } from './lib/magic.js';
+import { UserContext } from './lib/UserContext';
+import { getDatabase } from './lib/Collection';
 
 // FIXME this is not great -- shouldn't need to create a token
 // just to get plan info, but shouldn't need to create an extra
 // api call just for plan info
 const getAuth = async () => {
-  console.log('getting auth in Auth');
   const response = await fetch('/api/token', {
     method: 'post',
     body: JSON.stringify(await magic.user.getIdToken({ lifespan: 15 })),
@@ -28,11 +21,9 @@ const getAuth = async () => {
   return response.json();
 };
 
-const UserMetadata = React.createContext();
-
-const Auth = ({ children }) => {
+const Auth = () => {
   const [loginError, setLoginError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useContext(UserContext);
   const [showMenu, setShowMenu] = useState(false);
   const [menuRef] = useOutsideClickRef(() => setShowMenu(false));
   const [upgradeState, setUpgradeState] = useState(0);
@@ -51,9 +42,12 @@ const Auth = ({ children }) => {
       }
     }
   };
+
   const handleSignOut = async () => {
     await magic.user.logout();
-    await updateUser();
+    await (await getDatabase()).remove();
+    // we should also `Logout(false)` current Fauna token
+    location.reload();
   };
 
   const handleUpgrade = async () => {
@@ -72,9 +66,6 @@ const Auth = ({ children }) => {
     const { url } = await response.json();
     window.location.href = url;
     setUpgradeState(2);
-
-    // setGettingLink(false);
-    // console.log(await response.json());
   };
 
   const toggleMenu = () => {
@@ -101,7 +92,7 @@ const Auth = ({ children }) => {
   }, []);
 
   return (
-    <UserMetadata.Provider value={user}>
+    <>
       {user ? (
         <div
           ref={menuRef}
@@ -173,9 +164,8 @@ const Auth = ({ children }) => {
           className="top-0 right-0 mr-16 mt-8 fixed"
         />
       ) : null}
-      {children}
-    </UserMetadata.Provider>
+    </>
   );
 };
 
-export { Auth, UserMetadata };
+export { Auth };

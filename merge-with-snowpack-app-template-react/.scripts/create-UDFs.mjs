@@ -15,6 +15,7 @@ const {
   CreateIndex,
   CreateCollection,
   Collection,
+  Do,
   GT,
   Query,
   Lambda,
@@ -75,6 +76,9 @@ const {
       terms: [
         {
           field: ['data', 'owner'],
+        },
+        {
+          field: ['data', 'collection'],
         },
       ],
       values: [
@@ -139,37 +143,42 @@ const {
       role: 'server',
       body: Query(
         Lambda(
-          'newdocs',
-          Foreach(
-            Var('newdocs'),
-            Lambda(
-              'newdoc',
-              Let(
-                {
-                  document: Match(Index('id'), [
-                    CurrentIdentity(),
-                    Select('id', Var('newdoc')),
-                  ]),
-                  _: Update(CurrentIdentity(), {}),
-                },
-                If(
-                  Exists(Var('document')),
+          ['newdocs', 'collection'],
+          Do(
+            Foreach(
+              Var('newdocs'),
+              Lambda(
+                'newdoc',
+                Let(
+                  {
+                    document: Match(Index('id'), [
+                      CurrentIdentity(),
+                      Select('id', Var('newdoc')),
+                    ]),
+                  },
                   If(
-                    GT(
-                      Select(['updatedAt'], Var('newdoc')),
-                      Select(['data', 'updatedAt'], Get(Var('document'))),
+                    Exists(Var('document')),
+                    If(
+                      GT(
+                        Select(['updatedAt'], Var('newdoc')),
+                        Select(['data', 'updatedAt'], Get(Var('document'))),
+                      ),
+                      Update(Select('ref', Get(Var('document'))), {
+                        data: Var('newdoc'),
+                      }),
+                      null,
                     ),
-                    Update(Select('ref', Get(Var('document'))), {
-                      data: Var('newdoc'),
+                    Create(Collection('Document'), {
+                      data: Merge(Var('newdoc'), {
+                        owner: CurrentIdentity(),
+                        collection: Var('collection'),
+                      }),
                     }),
-                    null,
                   ),
-                  Create(Collection('Document'), {
-                    data: Merge(Var('newdoc'), { owner: CurrentIdentity() }),
-                  }),
                 ),
               ),
             ),
+            Update(CurrentIdentity(), {}),
           ),
         ),
       ),
@@ -179,12 +188,12 @@ const {
       role: 'server',
       body: Query(
         Lambda(
-          ['id', 'ts'],
+          ['id', 'ts', 'collection'],
           Let(
             {
               matches: Paginate(
                 Range(
-                  Match(Index('ts'), CurrentIdentity()),
+                  Match(Index('ts'), [CurrentIdentity(), Var('collection')]),
                   Add(1, Var('ts')),
                   [],
                 ),
@@ -202,7 +211,7 @@ const {
                     { doc: Get(Select(1, Var('item'))) },
                     Merge(Select('data', Var('doc')), [
                       { ts: Select('ts', Var('doc')) },
-                      { owner: null },
+                      { owner: null, collection: null },
                     ]),
                   ),
                 ),
