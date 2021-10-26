@@ -31,7 +31,7 @@ Also out-of-the-box:
 
 ## Try it out
 
-(if you get an error about accessing `uv_cwd` with the `npm run` scripts below, [please see this](http://kb.yworks.com/article/784/Installation-Issue-on-macOS---EPERM-operation-not-permitted-uvcwd)
+(If you get an error about accessing `uv_cwd` with the `npm run` scripts below, [please see this](http://kb.yworks.com/article/784/Installation-Issue-on-macOS---EPERM-operation-not-permitted-uvcwd)
 
 0. You have accounts at [fauna.com](https://dashboard.fauna.com/accounts/register), [magic.link](https://dashboard.magic.link/signup), and [stripe.com](https://dashboard.stripe.com/register)
 1. `npx @jfrancos/crancos [your-project]`
