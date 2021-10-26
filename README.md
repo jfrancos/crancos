@@ -78,6 +78,8 @@ https://user-images.githubusercontent.com/14883673/135511514-24bbac6e-93b5-4c55-
 ## `useCollection` usage
 
 ```
+import { useCollection } from './lib/ReplicatedCollection';
+
 const [collection, [query-result1, query-result2, ...]] = useCollection(
   collection-name,
   [mongo-style-query1, mongo-style-query2, ...],
