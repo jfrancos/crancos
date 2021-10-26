@@ -93,7 +93,7 @@ const [collection, [query-result1, query-result2, ...]] = useCollection(
 
  - `mongo-style-queries` follow the structure defined [here](https://github.com/cloudant/mango#find), i.e. these are objects with a mandatory `selector` and optional `limit`, `skip`, `sort` etc.  See [`Controller.jsx`](https://github.com/jfrancos/crancos/blob/main/merge-with-snowpack-app-template-react/src/Controller.jsx) for a couple examples.
 
-- `indices`: You should create an index for any data you're searching or sorting over.  Data stored using `useCollection` is schemaless from our point of view, with all data stored in the document's `data` object, and thus you should prefix indices accordingly e.g. `"data.title"`.  RxDB will not always complain when you search for something that doesn't have an index, so if you want to be sure, uncomment the following two lines in the `_create` function of `src/lib/Collection.jsx` and look for `pouchdb:find query plan` in your browsers' js console:
+- `indices`: It's good to create an index for any data you're searching or sorting over.  Data stored using `useCollection` is schemaless from our point of view, with all data stored in the document's `data` object, thus you should prefix indices accordingly e.g. `"data.title"`.  RxDB will not always complain when you search for something that doesn't have an index, so if you want to be sure, uncomment the following two lines in the `_create` function of `src/lib/Collection.jsx` and look for `pouchdb:find query plan` in your browsers' js console:
   ```
   // addPouchPlugin(pouchdbDebug);
   // PouchDB.debug.enable('pouchdb:find');
