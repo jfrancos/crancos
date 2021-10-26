@@ -87,7 +87,7 @@ const [collection, [query-result1, query-result2, ...]] = useCollection(
 
  - `collection` is an [RxDB Collection](https://rxdb.info/rx-collection.html) with which you can e.g. `insert` and `remove` documents.
 
- - `query-results` are the results of [mango-style-queries](https://github.com/cloudant/mango#find) that are [kept up-to-date](https://rxdb.info/rx-query.html#observe-) as the collection and its documents are updated.
+ - `query-results` are the results of [mongo-style-queries](https://github.com/cloudant/mango#find) that are [kept up-to-date](https://rxdb.info/rx-query.html#observe-) as the collection and its documents are updated.
    
  - `collection-name` will become the name of the underlying RxDB/pouchdb collection.  You can use multiple collections and have them replicated, if you give them different names.
 
