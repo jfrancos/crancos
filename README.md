@@ -7,7 +7,7 @@ This is a CRA-style template you can use to create reactive[1] offline-first per
 - [FaunaDB](https://fauna.com/) (cloud data storage)
 - [Magic](https://magic.link/) (passwordless auth and session management)
 - [An npm run script](https://github.com/jfrancos/crancos/blob/main/merge-with-snowpack-app-template-react/.scripts/create-UDFs.mjs) that implements [RxDB's replication plugin requirements](https://rxdb.info/replication.html) via [FQL](https://docs.fauna.com/fauna/current/api/fql/cheat_sheet)
-- A custom `useCollection` hook that exposes an [RxDB collection](https://rxdb.info/rx-collection.html) and any number of reactive[2] queries (usage below):
+- A custom `useCollection` hook that exposes an [RxDB collection](https://rxdb.info/rx-collection.html) and any number of reactive[2] queries ([usage below](https://github.com/jfrancos/crancos#usecollection-usage)):
 
 ```
 const [collection, [query-result1, query-result2, ...]] = useCollection(
@@ -87,7 +87,7 @@ const [collection, [query-result1, query-result2, ...]] = useCollection(
 
  - `collection` is an [RxDB Collection](https://rxdb.info/rx-collection.html) with which you can e.g. `insert` and `remove` documents.
 
- - `query-results` are the results of [queries](https://rxdb.info/rx-query.html#observe-) that are kept up-to-date as the collection and its documents are updated
+ - `query-results` are the results of [mango-style-queries](https://github.com/cloudant/mango#find) that are [kept up-to-date](https://rxdb.info/rx-query.html#observe-) as the collection and its documents are updated.
    
  - `collection-name` will become the name of the underlying RxDB/pouchdb collection.  You can use multiple collections and have them replicated, if you give them different names.
 
