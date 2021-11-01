@@ -1,6 +1,6 @@
 import { PouchDB } from 'rxdb';
 import pouchdbDebug from 'pouchdb-debug';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { RxDBValidatePlugin } from 'rxdb/plugins/validate';
 import { addRxPlugin, createRxDatabase } from 'rxdb/plugins/core';
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
@@ -95,4 +95,49 @@ const useCollection = (name, queries, indices) => {
   return [collection, queryStates.map((item) => item[0])];
 };
 
-export { useCollection, getDatabase };
+const useUser = () => {
+  const [userObject, setUserObject] = useState();
+
+  const updateUser = async (replacementObject) => {
+    (await getDatabase()).userdoc.upsert({
+      data: replacementObject,
+      updatedAt: 0,
+    });
+  };
+
+  useEffect(() => {
+    (async () => {
+      const db = await getDatabase();
+      const { userdoc } = await db.addCollections({
+        userdoc: {
+          schema: {
+            version: 0,
+            primaryKey: {
+              key: 'email',
+              fields: ['data.email'],
+            },
+            type: 'object',
+            properties: {
+              updatedAt: {
+                type: 'number',
+              },
+              email: {
+                type: 'string',
+              },
+              data: {
+                type: 'object',
+              },
+            },
+          },
+        },
+      });
+      userdoc
+        .findOne({ selector: {} })
+        .$.subscribe((item) => setUserObject(item?.toJSON().data));
+    })();
+  }, []);
+
+  return [userObject, updateUser];
+};
+
+export { useCollection, getDatabase, useUser };

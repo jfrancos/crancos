@@ -1,29 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState } from 'react';
 import { Suoli } from '@jfrancos/suoli';
 import { FaUserCircle } from 'react-icons/fa';
 import { useOutsideClickRef } from 'rooks';
 import { CgSpinner } from 'react-icons/cg';
 import { magic, RPCError } from './lib/magic.js';
-import { UserContext } from './lib/UserContext';
 import { getDatabase } from './lib/Collection';
-
-// FIXME this is not great -- shouldn't need to create a token
-// just to get plan info, but shouldn't need to create an extra
-// api call just for plan info
-const getAuth = async () => {
-  const response = await fetch('/api/token', {
-    method: 'post',
-    body: JSON.stringify(await magic.user.getIdToken({ lifespan: 15 })),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.json();
-};
+import { useUser } from './lib/ReplicatedCollection';
 
 const Auth = () => {
   const [loginError, setLoginError] = useState(null);
-  const [user, setUser] = useContext(UserContext);
+  const [user, setUser] = useUser();
   const [showMenu, setShowMenu] = useState(false);
   const [menuRef] = useOutsideClickRef(() => setShowMenu(false));
   const [upgradeState, setUpgradeState] = useState(0);
@@ -74,22 +60,16 @@ const Auth = () => {
 
   const updateUser = async () => {
     try {
-      const metadata = await magic.user.getMetadata();
-      const { plan } = await getAuth();
-      // also a bit hacky?:
-      metadata.plan = plan;
-      // console.log(token);
-      console.log('Auth: setting user', { metadata });
-      setUser(metadata);
+      const { email } = await magic.user.getMetadata();
+      if (email !== user?.email) {
+        setUser({ email });
+      }
     } catch {
-      console.log('Auth: setting user to null');
-      setUser(null);
+      console.log('no metadata');
+      // console.log('Auth: setting user to null');
+      // setUser(null);
     }
   };
-
-  useEffect(async () => {
-    await updateUser();
-  }, []);
 
   return (
     <>

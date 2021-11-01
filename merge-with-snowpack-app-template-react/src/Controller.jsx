@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { useCollection } from './lib/ReplicatedCollection';
+import { useCollection, useUser } from './lib/ReplicatedCollection';
 import { HiPlus, HiX, HiPencil, HiCheck } from 'react-icons/hi';
 import { useKey, useOutsideClickRef } from 'rooks'; // react-recipes looks great too
-import { UserContext } from './lib/UserContext';
 
 const Controller = () => {
-  const [user] = useContext(UserContext);
   const [editing, setEditing] = useState(null);
+  const [user, setUser] = useUser();
   const [collection, [tasks, checked]] = useCollection(
     'documents',
     [

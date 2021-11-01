@@ -1,64 +1,20 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { replicateRxCollection } from 'rxdb/plugins/replication';
-import { useCollection } from './Collection';
-import { UserContext } from './UserContext';
-import faunadb, { query as q } from 'faunadb';
-import { magic, RPCError } from './magic.js';
+import { getDatabase, useCollection, useUser } from './Collection';
+import { getClient, onVersion, q } from './fauna';
 
 const replicationStates = {};
-let expires = 0;
-let client;
-let stream;
+let userReplicationState = null;
 
-const cycleAuth = async () => {
-  console.log('cycling auth');
-  const magicToken = await magic.user.getIdToken({ lifespan: 15 });
-  const response = await (
-    await fetch('/api/token', {
-      method: 'post',
-      body: JSON.stringify(magicToken),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-  ).json();
-  ({ expires } = response);
-  const { secret } = response;
-  // since we can't specify per-stream secrets (or update them)
-  // we have to close and reopen clients
-  if (stream) {
-    stream.close();
-  }
-  if (client) {
-    await client.close();
-  }
-  client = new faunadb.Client({ secret });
-  setupStream();
-};
-
-const setupStream = () => {
-  stream = client.stream
-    .document(q.CurrentIdentity())
-    .on('version', () => {
-      console.log('new version');
-      // how can we make this less coarse
-      Object.values(replicationStates).forEach((item) => item.run());
-    })
-    .on('error', async (error) => {
-      if (Date.now() > expires) {
-        cycleAuth();
-      } else {
-        stream.close();
-        setTimeout(setupStream, 1000);
-        console.log('fauna stream error:', error);
-      }
-    })
-    .start();
-};
+onVersion(() => {
+  Object.values(replicationStates).forEach((item) => item.run());
+  userReplicationState.run();
+});
 
 const replicate = async (collection) => {
   console.log('replicate');
   const { name } = collection;
+
   replicationStates[name] = await replicateRxCollection({
     collection,
     replicationIdentifier: name,
@@ -66,7 +22,8 @@ const replicate = async (collection) => {
     liveInterval: 14400000, // four hours
     pull: {
       handler: async (lastPull) => {
-        console.log('pulling', { lastPull });
+        const client = await getClient();
+        // console.log('pulling', { lastPull });
         const { ts, id } = lastPull || { ts: 0, id: null };
         const result = await client.query(q.Call('feed', null, ts, name));
         return result;
@@ -75,7 +32,8 @@ const replicate = async (collection) => {
     push: {
       // there seems to be an extra push
       handler: async (docs) => {
-        console.log('pushing', { docs });
+        const client = await getClient();
+        // console.log('pushing', { docs });
         if (docs.length === 0) {
           return;
         }
@@ -92,24 +50,58 @@ const replicate = async (collection) => {
   });
   replicationStates[name].error$.subscribe(async (err) => {
     console.log('Replication error:', err);
-    if (Date.now() > expires) {
-      cycleAuth();
-    }
   });
   await replicationStates[name].awaitInitialReplication();
 };
 
 const useReplicatedCollection = (name, subs, indices) => {
   const [collection, queries] = useCollection(name, subs, indices);
-  const [user, setUser] = useContext(UserContext);
+  const [user, setUser] = useUser();
 
   useEffect(() => {
-    if (!replicationStates[name] && collection && user) {
-      console.log('creating replication for', name);
-      (async () => await replicate(collection))();
+    if (replicationStates[name] || !collection || !user) {
+      return;
     }
+    console.log('creating replication for', name);
+    (async () => await replicate(collection))();
   }, [collection, user]);
   return [collection, queries];
 };
 
-export { useReplicatedCollection as useCollection };
+const useReplicatedUser = () => {
+  const [user, setUser] = useUser();
+  useEffect(() => {
+    if (!user || userReplicationState) {
+      return;
+    }
+    (async () => {
+      console.log('initial rep');
+      userReplicationState = await replicateRxCollection({
+        collection: (await getDatabase()).userdoc,
+        replicationIdentifier: 'userdoc',
+        liveInterval: 14400000, // four hours
+        live: true,
+        pull: {
+          handler: async (lastPull) => {
+            console.log("getting client from")
+            const client = await getClient();
+            console.log("getting client afte")
+            console.log('pulling userdoc', { lastPull });
+            const result = await client.query(q.Call('feed_user'));
+            return {
+              documents: [{ email: result.email, data: result }],
+              hasMoreDocuments: false,
+            };
+          },
+        },
+      });
+      await userReplicationState.awaitInitialReplication();
+    })();
+  }, [user]);
+  return [user, setUser];
+};
+
+export {
+  useReplicatedCollection as useCollection,
+  useReplicatedUser as useUser,
+};

@@ -116,6 +116,13 @@ const {
           },
         },
         {
+          // resource: Ref(Ref('functions'), 'feed_user'),
+          resource: Function('feed_user'),
+          actions: {
+            call: true,
+          },
+        },
+        {
           // resource: Ref(Ref('functions'), 'set'),
           resource: Function('set'),
           actions: {
@@ -138,6 +145,22 @@ const {
   ];
 
   const createFunctions = [
+    {
+      name: 'feed_user',
+      role: 'server',
+      body: Query(
+        Lambda(
+          [],
+          Let(
+            { user: Get(CurrentIdentity()) },
+            {
+              email: Select(["data", "email"], Var("user")),
+              plan: Select(["data", "plan"], Var("user"))
+            }
+          )
+        )
+      )
+    },
     {
       name: 'set',
       role: 'server',
